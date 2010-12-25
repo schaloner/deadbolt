@@ -1,0 +1,10 @@
+%{
+    boolean allowAccess = false;
+    for (int i = 0; !allowAccess && i < _roles.size; i++)
+    {
+      allowAccess = controllers.deadbolt.Deadbolt.hasRoles(_roles.get(i))
+    }
+}%
+#{if allowAccess}
+    #{doBody /}
+#{/if}
