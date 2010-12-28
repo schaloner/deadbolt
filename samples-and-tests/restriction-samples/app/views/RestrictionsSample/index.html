@@ -1,0 +1,24 @@
+<div>Authorised</div>
+<p>Each of the following links should lead to a valid page</p>
+<ul>
+    <li><a href="@{RestrictionsSample.singleRestrictWithSingleRole_authorised}">Single restrict with single role
+        name</a></li>
+    <li><a href="@{RestrictionsSample.singleRestrictWithTwoRoles_authorised}">Single restrict with two role names</a>
+    </li>
+    <li><a href="@{RestrictionsSample.twoRestrictsWithOnlyOneValid_authorised}">Two restricts with only one valid</a>
+    </li>
+</ul>
+
+<br/>
+<br/>
+
+<div>Unauthorised</div>
+<p>Each of the following links should lead to a forbidden page</p>
+<ul>
+    <li><a href="@{RestrictionsSample.singleRestrictWithSingleRole_unauthorised}">Single restrict with single role
+        name</a></li>
+    <li><a href="@{RestrictionsSample.singleRestrictWithTwoRoles_unauthorised}">Single restrict with two role names</a>
+    </li>
+    <li><a href="@{RestrictionsSample.twoRestrictsWithOnlyNeitherValid_unauthorised}">Two restricts with neither
+        valid</a></li>
+</ul>

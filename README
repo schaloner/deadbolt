@@ -17,7 +17,7 @@ In order to know if access to a view or controller is authorised, you need to kn
 
 Once a RoleHolder has been implemented, it can return a list of models.deadbolt.Role objects to indicate which roles a RoleHolder has.  Again, Role is an interface and so should not intrude on your application's model architecture.
 
-In a move taken directly from the Secure module, you define the hooks into your application by extending a static inner class of Deadbolt - RoleHolderAccessor.  This class has two key methods -
+In a move taken directly from the Secure module, you define the hooks into your application by extending a static inner class of Deadbolt - DeadboltHandler.  This class has two key methods -
 
 bc. static RoleHolder getRoleHolder()
 
@@ -27,6 +27,7 @@ bc. static void onAccessFailure(Class<? extends Controller> controllerClass)
 
 onAccessFailure(Class) should handle the what happens following an unauthorised attempt to access a secured controller method.
 
+A further method, getExternalizedRestrictionsAccessor() can be implemented if you are supported externalised restriction trees.
 
 h3. Securing controllers
 
@@ -85,7 +86,7 @@ h3. Negating role names
 
 By prefixing a rolename with ! you state the method or view is inaccessible to any role holder with that role.
 
-bc. // This restricts access to the list method to any role holder with a "foo" role but no "bar" role.  If a "bar" role is present, access is denied.
+bc. This restricts access to the list method to any role holder with a "foo" role but no "bar" role.  If a "bar" role is present, access is denied.
 @Restrict({"foo", "!bar"})
 public static void list()
 
@@ -109,4 +110,30 @@ bc. #{deadbolt.restrict roles:[['foo', 'bar', 'gee']]}
     something else
 #{/deadbolt.restrict}
 
+
+h3. Externalised restrictions
+
+Deadbolt allows you to annotation controller classes and methods with named restriction trees.
+
+bc. @ExternalRestrictions("admin-only")
+public static void edit()
+
+bc. @ExternalRestrictions("admin", "super-mega-admin")
+public static void edit()
+
+This annotation maps to an externalised restriction - again a combination of ANDs, ORs and NOTs - and so allows you to
+define standard security schemes than can be changed at the e.g. database level.
+
+Each name passed to the annotation, e.g. admin and super-mega-admin in the example above, maps to an ExternalizedRestrictions
+instance.  The results of these instances are OR'd together.  Each ExternalizedRestrictions instance has a list of ExternalizedRestriction
+instances - each of these instances is also OR'd together.  Finally, each ExternalizedRestriction has a list of role names - these are ANDed together, and also support role name
+negation.
+
+
+h3. Mixing annotations
+
+The annotations detailed above can be applied in combination to controller classes and fields.  The evaluation is ANDed and the order is
+* Restrict
+* Restrictions
+* ExternalRestrictions
 

@@ -15,6 +15,8 @@
  */
 package controllers.deadbolt;
 
+import models.deadbolt.ExternalizedRestriction;
+import models.deadbolt.ExternalizedRestrictions;
 import models.deadbolt.NullRoleHolder;
 import models.deadbolt.Role;
 import models.deadbolt.RoleHolder;
@@ -40,6 +42,8 @@ public class Deadbolt extends Controller
 
     public static final String ON_ACCESS_FAILURE = "onAccessFailure";
 
+    public static final String EXTERNALISED_RESTRICTIONS_ACCESSOR = "getExternalizedRestrictionsAccessor";
+
     /**
      * Checks access to a class or method based on any {@link controllers.deadbolt.Restrict} or
      * {@link controllers.deadbolt.Restrictions} annotations.
@@ -47,26 +51,60 @@ public class Deadbolt extends Controller
     @Before
     static void checkRestrictions() throws Throwable
     {
-        RoleHolder roleHolder = (RoleHolder) RoleHolderAccessor.invoke(GET_ROLE_HOLDER);
+        RoleHolder roleHolder = (RoleHolder) DeadboltHandler.invoke(GET_ROLE_HOLDER);
 
-        Restrict restrict = getActionAnnotation(Restrict.class);
-        if (restrict == null)
+        handleRestrict(roleHolder);
+        handleRestrictions(roleHolder);
+        handleExternalRestrictions(roleHolder);
+    }
+
+    @Util
+    static void handleExternalRestrictions(RoleHolder roleHolder) throws Throwable
+    {
+        ExternalRestrictions externalRestrictions = getActionAnnotation(ExternalRestrictions.class);
+        if (externalRestrictions == null)
         {
-            restrict = getControllerInheritedAnnotation(Restrict.class);
+            externalRestrictions = getControllerInheritedAnnotation(ExternalRestrictions.class);
         }
-        if (restrict != null)
+
+        if (externalRestrictions != null)
         {
-            if (!checkRole(roleHolder, restrict))
+            ExternalizedRestrictionsAccessor externalisedRestrictionsAccessor =
+                    (ExternalizedRestrictionsAccessor) DeadboltHandler.invoke(EXTERNALISED_RESTRICTIONS_ACCESSOR);
+            boolean roleOk = false;
+
+            for (String externalRestrictionTreeName : externalRestrictions.value())
+            {
+                ExternalizedRestrictions externalizedRestrictions =
+                        externalisedRestrictionsAccessor.getExternalizedRestrictions(externalRestrictionTreeName);
+                if (externalizedRestrictions != null)
+                {
+                    List<ExternalizedRestriction> restrictions = externalizedRestrictions.getExternalisedRestrictions();
+                    for (ExternalizedRestriction restriction : restrictions)
+                    {
+                        List<String> roleNames = restriction.getRoleNames();
+                        roleOk |= checkRole(roleHolder,
+                                            roleNames.toArray(new String[roleNames.size()]));
+                    }
+                }
+            }
+
+            if (!roleOk)
             {
                 accessFailed();
             }
         }
+    }
 
+    @Util
+    static void handleRestrictions(RoleHolder roleHolder) throws Throwable
+    {
         Restrictions restrictions = getActionAnnotation(Restrictions.class);
         if (restrictions == null)
         {
             restrictions = getControllerInheritedAnnotation(Restrictions.class);
         }
+
         if (restrictions != null)
         {
             Restrict[] restrictArray = restrictions.value();
@@ -74,7 +112,7 @@ public class Deadbolt extends Controller
             for (int i = 0; !roleOk && i < restrictArray.length; i++)
             {
                 roleOk |= checkRole(roleHolder,
-                                    restrictArray[i]);
+                                    restrictArray[i].value());
             }
             if (!roleOk)
             {
@@ -84,11 +122,29 @@ public class Deadbolt extends Controller
     }
 
     @Util
+    static void handleRestrict(RoleHolder roleHolder) throws Throwable
+    {
+        Restrict restrict = getActionAnnotation(Restrict.class);
+        if (restrict == null)
+        {
+            restrict = getControllerInheritedAnnotation(Restrict.class);
+        }
+
+        if (restrict != null)
+        {
+            if (!checkRole(roleHolder,
+                           restrict.value()))
+            {
+                accessFailed();
+            }
+        }
+    }
+
+    @Util
     static boolean checkRole(RoleHolder roleHolder,
-                             Restrict restrict)
+                             String[] roleNames)
     {
         boolean roleOk = true;
-        String[] roleNames = restrict.value();
         if (!hasAllRoles(roleHolder,
                          roleNames))
         {
@@ -106,7 +162,8 @@ public class Deadbolt extends Controller
         Logger.error("Access failure on [{}]",
                      controllerClass.getName());
 
-        RoleHolderAccessor.invoke(ON_ACCESS_FAILURE, Class.class);
+        DeadboltHandler.invoke(ON_ACCESS_FAILURE,
+                               Class.class);
 
     }
 
@@ -161,7 +218,7 @@ public class Deadbolt extends Controller
      */
     public static boolean hasRoles(List<String> roleNames) throws Throwable
     {
-        RoleHolder roleHolder = (RoleHolder) RoleHolderAccessor.invoke(GET_ROLE_HOLDER);
+        RoleHolder roleHolder = (RoleHolder) DeadboltHandler.invoke(GET_ROLE_HOLDER);
 
         return roleHolder != null &&
                roleHolder.getRoles() != null &&
@@ -173,8 +230,16 @@ public class Deadbolt extends Controller
      * This class provides hooks via the getRoleHolder and onAccessFailure methods.  Create a new class that extends from
      * this one and override these methods in order to get the whole thing to work.
      */
-    public static class RoleHolderAccessor extends Controller
+    public static class DeadboltHandler extends Controller
     {
+        private static final ExternalizedRestrictionsAccessor NULL_ERA = new ExternalizedRestrictionsAccessor()
+        {
+            public ExternalizedRestrictions getExternalizedRestrictions(String name)
+            {
+                return null;
+            }
+        };
+
         static RoleHolder getRoleHolder()
         {
             return NullRoleHolder.NULL_OBJECT;
@@ -185,13 +250,18 @@ public class Deadbolt extends Controller
             forbidden();
         }
 
+        static ExternalizedRestrictionsAccessor getExternalizedRestrictionsAccessor()
+        {
+            return NULL_ERA;
+        }
+
         private static Object invoke(String m, Object... args) throws Throwable
         {
             Class roleAccessor;
-            List<Class> classes = Play.classloader.getAssignableClasses(RoleHolderAccessor.class);
+            List<Class> classes = Play.classloader.getAssignableClasses(DeadboltHandler.class);
             if (classes.size() == 0)
             {
-                roleAccessor = RoleHolderAccessor.class;
+                roleAccessor = DeadboltHandler.class;
             }
             else
             {

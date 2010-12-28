@@ -1,0 +1,18 @@
+<div>Authorised</div>
+<p>Each of the following links should lead to a valid page</p>
+<ul>
+    <li><a href="@{NegationSample.singleNegatedRoleOnRoleNotHeld_authorised}">Negation on role not held</a></li>
+    <li><a href="@{NegationSample.twoRestrictsWithOneRoleValidAndOtherNegated_authorised}">Two restricts with one held
+        role negated</a></li>
+</ul>
+
+<br/>
+<br/>
+
+<div>Unauthorised</div>
+<p>Each of the following links should lead to a forbidden page</p>
+<ul>
+    <li><a href="@{NegationSample.singleNegatedRoleOnHeldRole_unauthorised}">Negation on held role</a></li>
+    <li><a href="@{NegationSample.twoRestrictsWithBothHeldRolesNegated_unauthorised}">Negation on both held roles</a>
+    </li>
+</ul>

@@ -1,0 +1,17 @@
+<div>Authorised</div>
+<p>Each of the following links should lead to a valid page</p>
+<ul>
+    <li><a href="@{ExternalRestrictionSample.standard_authorised}">Both held roles present</a></li>
+    <li><a href="@{ExternalRestrictionSample.oneRoleMissing_authorised}">One held role present</a></li>
+</ul>
+
+<br/>
+<br/>
+
+<div>Unauthorised</div>
+<p>Each of the following links should lead to a forbidden page</p>
+<ul>
+    <li><a href="@{ExternalRestrictionSample.admin_unauthorised}">Required role missing</a></li>
+    <li><a href="@{ExternalRestrictionSample.excludeRestricted_unauthorised}">Negation on held role</a>
+    </li>
+</ul>

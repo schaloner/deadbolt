@@ -1,0 +1,40 @@
+<p>The following box should contain text</p>
+<div style="border: 1px solid #000000">
+    #{deadbolt.restrict roles:[['foo']]}
+    blah blah blah
+    #{/deadbolt.restrict}
+</div>
+<br/>
+<br/>
+<p>The following box should contain text</p>
+<div style="border: 1px solid #000000">
+    #{deadbolt.restrict roles:[['foo', 'bar']]}
+    blah blah blah
+    #{/deadbolt.restrict}
+</div>
+<br/>
+<br/>
+<p>The following box should contain text</p>
+<div style="border: 1px solid #000000">
+    #{deadbolt.restrict roles:[['foo'], ['bar']]}
+    blah blah blah
+    #{/deadbolt.restrict}
+</div>
+<br/>
+<br/>
+<p>The following box should not contain text</p>
+<div style="border: 1px solid #000000">
+    #{deadbolt.restrict roles:[['foo', 'rab']]}
+    blah blah blah
+    #{/deadbolt.restrict}
+</div>
+<br/>
+<br/>
+<p>The following box should not contain text</p>
+<div style="border: 1px solid #000000">
+    #{deadbolt.restrict roles:[['foo', '!bar']]}
+    blah blah blah
+    #{/deadbolt.restrict}
+</div>
+<br/>
+<br/>
