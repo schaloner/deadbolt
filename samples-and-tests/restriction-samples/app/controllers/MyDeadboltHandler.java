@@ -6,7 +6,6 @@ import deadbolt.MyExternalizedRestrictionsAccessor;
 import deadbolt.MyRoleHolder;
 import models.deadbolt.RoleHolder;
 import play.Logger;
-import play.mvc.Controller;
 
 /**
  * @author Steve Chaloner (steve@objectify.be).
@@ -18,9 +17,9 @@ public class MyDeadboltHandler extends Deadbolt.DeadboltHandler
         return new MyRoleHolder();
     }
 
-    static void onAccessFailure(Class<? extends Controller> controllerClass)
+    static void onAccessFailure(String controllerClassName)
     {
-        Logger.error("Hit an authorisation issue when trying to access [{}]", controllerClass);
+        Logger.error("Hit an authorisation issue when trying to access [{}]", controllerClassName);
         forbidden();
     }
 

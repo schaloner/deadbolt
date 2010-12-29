@@ -158,12 +158,12 @@ public class Deadbolt extends Controller
      */
     static void accessFailed() throws Throwable
     {
-        Class<? extends Controller> controllerClass = getControllerClass();
-        Logger.error("Access failure on [{}]",
-                     controllerClass.getName());
+        String controllerClassName = getControllerClass().getName();
+        Logger.debug("Deadbolt: Access failure on [%s]",
+                     controllerClassName);
 
         DeadboltHandler.invoke(ON_ACCESS_FAILURE,
-                               Class.class);
+                               controllerClassName);
 
     }
 
