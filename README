@@ -118,7 +118,7 @@ Deadbolt allows you to annotation controller classes and methods with named rest
 bc. @ExternalRestrictions("admin-only")
 public static void edit()
 
-bc. @ExternalRestrictions("admin", "super-mega-admin")
+bc. @ExternalRestrictions({"admin", "super-mega-admin"})
 public static void edit()
 
 This annotation maps to an externalised restriction - again a combination of ANDs, ORs and NOTs - and so allows you to
