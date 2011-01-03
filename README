@@ -61,7 +61,7 @@ bc. // This restricts access to the list method to any role holder with a role w
 public static void list()
 
 bc. // This restricts access to the list method to any role holder with the "foo" role, or roles whose names are "bar" AND "gee".  Note that a role holder with a "bar" OR a "gee" role will be denied access.
-@Restrictions({@Restrict("foo"), @Restrict("bar", "gee")})
+@Restrictions({@Restrict("foo"), @Restrict({"bar", "gee"})})
 public static void list()
 
 
