@@ -1,4 +1,4 @@
-package deadbolt;
+package models;
 
 import models.deadbolt.Role;
 import models.deadbolt.RoleHolder;

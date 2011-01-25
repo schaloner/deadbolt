@@ -11,11 +11,46 @@ To installl Deadbolt, you can use the modules repository:
 
 bc. play install deadbolt-0.1
 
+
+h3. Examples
+Check the samples-and-tests folder for examples of all the code required below.
+
+
 h3. Identifying the current user
 
 In order to know if access to a view or controller is authorised, you need to know who the current user is.  Because various applications will have their own concept of a user, Deadbolt defines the models.deadbolt.RoleHolder interface.  This interface should be implemented by any class type that represents an object that will try to access a controller method or view.
 
+bc. package models;
+import models.deadbolt.Role;
+import models.deadbolt.RoleHolder;
+import java.util.Arrays;
+import java.util.List;
+public class MyRoleHolder implements RoleHolder
+{
+    public List<? extends Role> getRoles()
+    {
+        return Arrays.asList(new MyRole("foo"),
+                             new MyRole("bar"),
+                             new MyRole("restricted"));
+    }
+}
+
 Once a RoleHolder has been implemented, it can return a list of models.deadbolt.Role objects to indicate which roles a RoleHolder has.  Again, Role is an interface and so should not intrude on your application's model architecture.
+
+bc. package models;
+import models.deadbolt.Role;
+public class MyRole implements Role
+{
+    private String name;
+    public MyRole(String name)
+    {
+        this.name = name;
+    }
+    public String getRoleName()
+    {
+        return name;
+    }
+}
 
 In a move taken directly from the Secure module, you define the hooks into your application by extending a static inner class of Deadbolt - DeadboltHandler.  This class has two key methods -
 
@@ -29,6 +64,7 @@ onAccessFailure(Class) should handle the what happens following an unauthorised 
 
 A further method, getExternalizedRestrictionsAccessor() can be implemented if you are supported externalised restriction trees.
 
+
 h3. Securing controllers
 
 Controllers are secured using the @With annotation to ensure method calls are checked against the current user.
@@ -39,6 +75,7 @@ public class MyController extends Controller
 Rolenames are matched against result of the Role.getRoleName() method of the roles return from RoleHolder#getRoles().
 
 There are two annotations available to define access to a controller method - @Restrict, and @Restrictions.
+
 
 h3. @Restrict
 
@@ -51,6 +88,7 @@ public static void list()
 bc. // This restricts access to the list method to any role holder with both "foo" and a "bar" roles.
 @Restrict({"foo", "bar"})
 public static void list()
+
 
 h3. @Restrictions
 
@@ -129,6 +167,35 @@ instance.  The results of these instances are OR'd together.  Each ExternalizedR
 instances - each of these instances is also OR'd together.  Finally, each ExternalizedRestriction has a list of role names - these are ANDed together, and also support role name
 negation.
 
+Below is an example implementatio
+
+n of an ExternalizedRestrictionsAccessor.
+
+bc. import controllers.deadbolt.ExternalizedRestrictionsAccessor;
+import models.deadbolt.ExternalizedRestrictions;
+import java.util.HashMap;
+import java.util.Map;
+public class MyExternalizedRestrictionsAccessor implements ExternalizedRestrictionsAccessor
+{
+    private final Map<String, ExternalizedRestrictions> restrictions = new HashMap<String, ExternalizedRestrictions>();
+    public MyExternalizedRestrictionsAccessor()
+    {
+        restrictions.put("standard",
+                         new MyExternalizedRestrictions(new MyExternalizedRestriction("foo"),
+                                                        new MyExternalizedRestriction("bar")));
+        restrictions.put("one-role-missing",
+                         new MyExternalizedRestrictions(new MyExternalizedRestriction("foo"),
+                                                        new MyExternalizedRestriction("rab")));
+        restrictions.put("admin",
+                         new MyExternalizedRestrictions(new MyExternalizedRestriction("admin")));
+        restrictions.put("exclude-restricted",
+                         new MyExternalizedRestrictions(new MyExternalizedRestriction("!restricted")));
+    }
+    public ExternalizedRestrictions getExternalizedRestrictions(String name)
+    {
+        return restrictions.get(name);
+    }
+}
 
 h3. Mixing annotations
 
@@ -136,4 +203,3 @@ The annotations detailed above can be applied in combination to controller class
 * Restrict
 * Restrictions
 * ExternalRestrictions
-
