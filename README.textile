@@ -9,7 +9,7 @@ h3. Getting started
 
 To installl Deadbolt, you can use the modules repository:
 
-bc. play install deadbolt-0.1
+bc. play install deadbolt-<required version>
 
 
 h3. Examples
