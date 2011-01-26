@@ -13,6 +13,7 @@ bc. play install deadbolt-0.1
 
 
 h3. Examples
+
 Check the samples-and-tests folder for examples of all the code required below.
 
 
@@ -167,9 +168,7 @@ instance.  The results of these instances are OR'd together.  Each ExternalizedR
 instances - each of these instances is also OR'd together.  Finally, each ExternalizedRestriction has a list of role names - these are ANDed together, and also support role name
 negation.
 
-Below is an example implementatio
-
-n of an ExternalizedRestrictionsAccessor.
+Below is an example implementation of an ExternalizedRestrictionsAccessor.
 
 bc. import controllers.deadbolt.ExternalizedRestrictionsAccessor;
 import models.deadbolt.ExternalizedRestrictions;
