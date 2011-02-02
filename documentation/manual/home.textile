@@ -59,9 +59,9 @@ bc. static RoleHolder getRoleHolder()
 
 getRoleHolder() should return the current user, which must implement the models.deadbolt.RoleHolder interface.
 
-bc. static void onAccessFailure(Class<? extends Controller> controllerClass)
+bc. static void onAccessFailure(String controllerClassName)
 
-onAccessFailure(Class) should handle the what happens following an unauthorised attempt to access a secured controller method.
+onAccessFailure(String) should handle the what happens following an unauthorised attempt to access a secured controller method.
 
 A further method, getExternalizedRestrictionsAccessor() can be implemented if you are supported externalised restriction trees.
 

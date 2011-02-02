@@ -17,6 +17,12 @@ public class MyDeadboltHandler extends Deadbolt.DeadboltHandler
         return new MyRoleHolder();
     }
 
+    /**
+     * Custom handling of access failure.  Note that further information on the request can be taken from
+     * Http.Request.current(), such as actionMethod, etc.
+     *
+     * @param controllerClassName the name of the controller class.
+     */
     static void onAccessFailure(String controllerClassName)
     {
         Logger.error("Hit an authorisation issue when trying to access [%s]", controllerClassName);

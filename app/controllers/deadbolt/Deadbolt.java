@@ -245,7 +245,12 @@ public class Deadbolt extends Controller
             return NullRoleHolder.NULL_OBJECT;
         }
 
-        static void onAccessFailure(Class<? extends Controller> controllerClass)
+        /**
+         * Invoked when an access failure is detected on <i>controllerClassName</i>.
+         *
+         * @param controllerClassName the name of the controller access was denied to
+         */
+        static void onAccessFailure(String controllerClassName)
         {
             forbidden();
         }
