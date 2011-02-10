@@ -1,6 +1,7 @@
 package controllers;
 
 import controllers.deadbolt.Deadbolt;
+import controllers.deadbolt.DeadboltHandler;
 import controllers.deadbolt.ExternalizedRestrictionsAccessor;
 import deadbolt.MyExternalizedRestrictionsAccessor;
 import models.MyRoleHolder;
@@ -10,9 +11,9 @@ import play.Logger;
 /**
  * @author Steve Chaloner (steve@objectify.be).
  */
-public class MyDeadboltHandler extends Deadbolt.DeadboltHandler
+public class MyDeadboltHandler implements DeadboltHandler
 {
-    static RoleHolder getRoleHolder()
+    public RoleHolder getRoleHolder()
     {
         return new MyRoleHolder();
     }
@@ -23,13 +24,13 @@ public class MyDeadboltHandler extends Deadbolt.DeadboltHandler
      *
      * @param controllerClassName the name of the controller class.
      */
-    static void onAccessFailure(String controllerClassName)
+    public void onAccessFailure(String controllerClassName)
     {
         Logger.error("Hit an authorisation issue when trying to access [%s]", controllerClassName);
-        forbidden();
+        Deadbolt.forbidden();
     }
 
-    static ExternalizedRestrictionsAccessor getExternalizedRestrictionsAccessor()
+    public ExternalizedRestrictionsAccessor getExternalizedRestrictionsAccessor()
     {
         return new MyExternalizedRestrictionsAccessor();
     }

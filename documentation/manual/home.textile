@@ -7,7 +7,7 @@ Note that Deadbolt doesn't provide authentication!  You can still use the existi
 
 h3. Getting started
 
-To installl Deadbolt, you can use the modules repository:
+To install Deadbolt, you can use the modules repository:
 
 bc. play install deadbolt-<required version>
 
@@ -53,18 +53,32 @@ public class MyRole implements Role
     }
 }
 
-In a move taken directly from the Secure module, you define the hooks into your application by extending a static inner class of Deadbolt - DeadboltHandler.  This class has two key methods -
+h3. Hooking Deadbolt into your application
 
-bc. static RoleHolder getRoleHolder()
+To provide the information needed for the runtime security, you need to implement the controllers.deadbolt.DeadboltHandler interface; an abstract version - controllers.deadbolt.AbstractDeadboltHandler - is also available for convenience when you aren't using externalised restrictions.
 
-getRoleHolder() should return the current user, which must implement the models.deadbolt.RoleHolder interface.
+The DeadboltHandler interface defines three methods:
 
-bc. static void onAccessFailure(String controllerClassName)
+* RoleHolder getRoleHolder()
 
-onAccessFailure(String) should handle the what happens following an unauthorised attempt to access a secured controller method.
+This method will typically return the current RoleHolder.
 
-A further method, getExternalizedRestrictionsAccessor() can be implemented if you are supported externalised restriction trees.
+* void onAccessFailure(String controllerClassName)
 
+This method is invoked when a restricted resource is accessed without permission.  This method may log something; invoke a controller class and set the current user back on the path of not messing around with the address bar.
+
+* ExternalizedRestrictionsAccessor getExternalizedRestrictionsAccessor()
+
+If your application externalized restrictions, e.g. in a database or XML file, you will need to provide a way to access them by implementing an ExternalizedRestrictionsAccessor.  That implementation can then be passed into Deadbolt by returning it from this method.  If you extend AbstractDeadboltHandler, this method is implemented using the Null Object pattern - this is the easiest way to implement DeadboltHandler if you're not using externalized restrictions.
+
+Once you've implemented DeadboltHandler, you can declare it in your application.conf file.  Don't forget a no-args constructor is required!
+
+bc. deadbolt.handler=controllers.MyDeadboltHandler
+
+If you want to have different DeadboltHandlers used in different contexts, the standard Play mechanism is used:
+
+bc. %production.deadbolt.handler=controllers.ProductionDeadboltHandler
+%test.deadbolt.handler=controllers.TestDeadboltHandler
 
 h3. Securing controllers
 

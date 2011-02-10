@@ -17,17 +17,15 @@ package controllers.deadbolt;
 
 import models.deadbolt.ExternalizedRestriction;
 import models.deadbolt.ExternalizedRestrictions;
-import models.deadbolt.NullRoleHolder;
 import models.deadbolt.Role;
 import models.deadbolt.RoleHolder;
 import play.Logger;
 import play.Play;
+import play.exceptions.ConfigurationException;
 import play.mvc.Before;
 import play.mvc.Controller;
 import play.mvc.Util;
-import play.utils.Java;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,11 +36,29 @@ import java.util.List;
  */
 public class Deadbolt extends Controller
 {
-    public static final String GET_ROLE_HOLDER = "getRoleHolder";
+    public static final String DEADBOLT_HANDLER_KEY = "deadbolt.handler";
 
-    public static final String ON_ACCESS_FAILURE = "onAccessFailure";
+    private static DeadboltHandler DEADBOLT_HANDLER;
 
-    public static final String EXTERNALISED_RESTRICTIONS_ACCESSOR = "getExternalizedRestrictionsAccessor";
+    static
+    {
+        String handlerName = Play.configuration.getProperty(DEADBOLT_HANDLER_KEY);
+        if (handlerName == null)
+        {
+            throw new ConfigurationException("deadbolt.handler must be defined");
+        }
+
+        try
+        {
+            Class<DeadboltHandler> clazz = (Class<DeadboltHandler>)Class.forName(handlerName);
+            DEADBOLT_HANDLER = clazz.newInstance();
+        }
+        catch (Exception e)
+        {
+            throw new ConfigurationException(String.format("Unable to create DeadboltHandler instance: [%s]",
+                                                           e.getMessage()));
+        }
+    }
 
     /**
      * Checks access to a class or method based on any {@link controllers.deadbolt.Restrict} or
@@ -51,7 +67,7 @@ public class Deadbolt extends Controller
     @Before
     static void checkRestrictions() throws Throwable
     {
-        RoleHolder roleHolder = (RoleHolder) DeadboltHandler.invoke(GET_ROLE_HOLDER);
+        RoleHolder roleHolder = DEADBOLT_HANDLER.getRoleHolder();
 
         handleRestrict(roleHolder);
         handleRestrictions(roleHolder);
@@ -70,7 +86,7 @@ public class Deadbolt extends Controller
         if (externalRestrictions != null)
         {
             ExternalizedRestrictionsAccessor externalisedRestrictionsAccessor =
-                    (ExternalizedRestrictionsAccessor) DeadboltHandler.invoke(EXTERNALISED_RESTRICTIONS_ACCESSOR);
+                    DEADBOLT_HANDLER.getExternalizedRestrictionsAccessor();
             boolean roleOk = false;
 
             for (String externalRestrictionTreeName : externalRestrictions.value())
@@ -162,8 +178,7 @@ public class Deadbolt extends Controller
         Logger.debug("Deadbolt: Access failure on [%s]",
                      controllerClassName);
 
-        DeadboltHandler.invoke(ON_ACCESS_FAILURE,
-                               controllerClassName);
+        DEADBOLT_HANDLER.onAccessFailure(controllerClassName);
 
     }
 
@@ -218,7 +233,7 @@ public class Deadbolt extends Controller
      */
     public static boolean hasRoles(List<String> roleNames) throws Throwable
     {
-        RoleHolder roleHolder = (RoleHolder) DeadboltHandler.invoke(GET_ROLE_HOLDER);
+        RoleHolder roleHolder = DEADBOLT_HANDLER.getRoleHolder();
 
         return roleHolder != null &&
                roleHolder.getRoles() != null &&
@@ -226,63 +241,8 @@ public class Deadbolt extends Controller
                            roleNames.toArray(new String[roleNames.size()]));
     }
 
-    /**
-     * This class provides hooks via the getRoleHolder and onAccessFailure methods.  Create a new class that extends from
-     * this one and override these methods in order to get the whole thing to work.
-     */
-    public static class DeadboltHandler extends Controller
+    public static void forbidden()
     {
-        private static final ExternalizedRestrictionsAccessor NULL_ERA = new ExternalizedRestrictionsAccessor()
-        {
-            public ExternalizedRestrictions getExternalizedRestrictions(String name)
-            {
-                return null;
-            }
-        };
-
-        static RoleHolder getRoleHolder()
-        {
-            return NullRoleHolder.NULL_OBJECT;
-        }
-
-        /**
-         * Invoked when an access failure is detected on <i>controllerClassName</i>.
-         *
-         * @param controllerClassName the name of the controller access was denied to
-         */
-        static void onAccessFailure(String controllerClassName)
-        {
-            forbidden();
-        }
-
-        static ExternalizedRestrictionsAccessor getExternalizedRestrictionsAccessor()
-        {
-            return NULL_ERA;
-        }
-
-        private static Object invoke(String m, Object... args) throws Throwable
-        {
-            Class roleAccessor;
-            List<Class> classes = Play.classloader.getAssignableClasses(DeadboltHandler.class);
-            if (classes.size() == 0)
-            {
-                roleAccessor = DeadboltHandler.class;
-            }
-            else
-            {
-                roleAccessor = classes.get(0);
-            }
-
-            try
-            {
-                return Java.invokeStaticOrParent(roleAccessor,
-                                                 m,
-                                                 args);
-            }
-            catch (InvocationTargetException e)
-            {
-                throw e.getTargetException();
-            }
-        }
+        Controller.forbidden();
     }
 }
