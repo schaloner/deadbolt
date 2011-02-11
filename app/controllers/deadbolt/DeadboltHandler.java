@@ -8,6 +8,12 @@ import models.deadbolt.RoleHolder;
 public interface DeadboltHandler
 {
     /**
+     * Invoked immediately before controller or view restrictions are checked.  This forms the integration with any
+     * authentication actions that may need to occur.
+     */
+    void beforeRoleCheck();
+
+    /**
      * Gets the current {@link RoleHolder}, e.g. the current user.
      *
      * @return the current role holder

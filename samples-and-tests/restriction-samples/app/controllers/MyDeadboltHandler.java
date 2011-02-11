@@ -13,6 +13,11 @@ import play.Logger;
  */
 public class MyDeadboltHandler implements DeadboltHandler
 {
+    public void beforeRoleCheck()
+    {
+        // Ensure the current user is logged in, and redirect accordingly
+    }
+
     public RoleHolder getRoleHolder()
     {
         return new MyRoleHolder();

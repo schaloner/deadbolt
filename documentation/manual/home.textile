@@ -57,7 +57,11 @@ h3. Hooking Deadbolt into your application
 
 To provide the information needed for the runtime security, you need to implement the controllers.deadbolt.DeadboltHandler interface; an abstract version - controllers.deadbolt.AbstractDeadboltHandler - is also available for convenience when you aren't using externalised restrictions.
 
-The DeadboltHandler interface defines three methods:
+The DeadboltHandler interface defines four methods:
+
+* void beforeRoleCheck()
+
+This method will be invoked prior to checking the authorisation of the current RoleHolder.  This forms the basis for hooking into authentication, i.e. in this method you can check if the user is actually logged in, and redirect accordingly if not.
 
 * RoleHolder getRoleHolder()
 

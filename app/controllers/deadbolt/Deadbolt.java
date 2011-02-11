@@ -67,6 +67,8 @@ public class Deadbolt extends Controller
     @Before
     static void checkRestrictions() throws Throwable
     {
+        DEADBOLT_HANDLER.beforeRoleCheck();
+
         RoleHolder roleHolder = DEADBOLT_HANDLER.getRoleHolder();
 
         handleRestrict(roleHolder);
@@ -233,6 +235,8 @@ public class Deadbolt extends Controller
      */
     public static boolean hasRoles(List<String> roleNames) throws Throwable
     {
+        DEADBOLT_HANDLER.beforeRoleCheck();
+
         RoleHolder roleHolder = DEADBOLT_HANDLER.getRoleHolder();
 
         return roleHolder != null &&
