@@ -89,24 +89,30 @@ public class Deadbolt extends Controller
         {
             ExternalizedRestrictionsAccessor externalisedRestrictionsAccessor =
                     DEADBOLT_HANDLER.getExternalizedRestrictionsAccessor();
-            boolean roleOk = false;
 
-            for (String externalRestrictionTreeName : externalRestrictions.value())
+            boolean roleOk = false;
+            if (externalisedRestrictionsAccessor == null)
             {
-                ExternalizedRestrictions externalizedRestrictions =
-                        externalisedRestrictionsAccessor.getExternalizedRestrictions(externalRestrictionTreeName);
-                if (externalizedRestrictions != null)
+                Logger.fatal("@ExternalRestrictions are specified but no ExternalizedRestrictionsAccessor is available.  Denying access to resource.");
+            }
+            else
+            {
+                for (String externalRestrictionTreeName : externalRestrictions.value())
                 {
-                    List<ExternalizedRestriction> restrictions = externalizedRestrictions.getExternalisedRestrictions();
-                    for (ExternalizedRestriction restriction : restrictions)
+                    ExternalizedRestrictions externalizedRestrictions =
+                            externalisedRestrictionsAccessor.getExternalizedRestrictions(externalRestrictionTreeName);
+                    if (externalizedRestrictions != null)
                     {
-                        List<String> roleNames = restriction.getRoleNames();
-                        roleOk |= checkRole(roleHolder,
-                                            roleNames.toArray(new String[roleNames.size()]));
+                        List<ExternalizedRestriction> restrictions = externalizedRestrictions.getExternalisedRestrictions();
+                        for (ExternalizedRestriction restriction : restrictions)
+                        {
+                            List<String> roleNames = restriction.getRoleNames();
+                            roleOk |= checkRole(roleHolder,
+                                                roleNames.toArray(new String[roleNames.size()]));
+                        }
                     }
                 }
             }
-
             if (!roleOk)
             {
                 accessFailed();

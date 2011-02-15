@@ -9,14 +9,6 @@ import models.deadbolt.RoleHolder;
  */
 public abstract class AbstractDeadboltHandler implements DeadboltHandler
 {
-    private static final ExternalizedRestrictionsAccessor NULL_ERA = new ExternalizedRestrictionsAccessor()
-    {
-        public ExternalizedRestrictions getExternalizedRestrictions(String name)
-        {
-            return null;
-        }
-    };
-
     /**
      * {@inheritDoc}
      */
@@ -41,6 +33,6 @@ public abstract class AbstractDeadboltHandler implements DeadboltHandler
     @Override
     public ExternalizedRestrictionsAccessor getExternalizedRestrictionsAccessor()
     {
-        return NULL_ERA;
+        return null;
     }
 }

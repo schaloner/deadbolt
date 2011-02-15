@@ -73,7 +73,7 @@ This method is invoked when a restricted resource is accessed without permission
 
 * ExternalizedRestrictionsAccessor getExternalizedRestrictionsAccessor()
 
-If your application externalized restrictions, e.g. in a database or XML file, you will need to provide a way to access them by implementing an ExternalizedRestrictionsAccessor.  That implementation can then be passed into Deadbolt by returning it from this method.  If you extend AbstractDeadboltHandler, this method is implemented using the Null Object pattern - this is the easiest way to implement DeadboltHandler if you're not using externalized restrictions.
+If your application externalized restrictions, e.g. in a database or XML file, you will need to provide a way to access them by implementing an ExternalizedRestrictionsAccessor.  That implementation can then be passed into Deadbolt by returning it from this method.  If you don't use external restrictions in your app, you can safely return null from this method.
 
 Once you've implemented DeadboltHandler, you can declare it in your application.conf file.  Don't forget a no-args constructor is required!
 
@@ -214,9 +214,15 @@ public class MyExternalizedRestrictionsAccessor implements ExternalizedRestricti
     }
 }
 
+
 h3. Mixing annotations
 
 The annotations detailed above can be applied in combination to controller classes and fields.  The evaluation is ANDed and the order is
 * Restrict
 * Restrictions
 * ExternalRestrictions
+
+
+h3. Integrating with authentication systems
+
+For an example of how to integrate Deadbolt with an authentication module, please take a look at the integration-with-secure app in samples-and-tests - this uses the standard Secure module to illustrate the integration.

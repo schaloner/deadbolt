@@ -29,7 +29,8 @@ public interface DeadboltHandler
 
     /**
      * Gets the accessor used to determine restrictions from an external source.
-     * @return
+     *
+     * @return the accessor for externalised restrictions.  May be null.
      */
     ExternalizedRestrictionsAccessor getExternalizedRestrictionsAccessor();
 }
