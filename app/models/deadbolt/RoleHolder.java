@@ -1,5 +1,5 @@
 /*
- * Copyright 2009-2010 Steve Chaloner
+ * Copyright 2010-2011 Steve Chaloner
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,8 @@ package models.deadbolt;
 import java.util.List;
 
 /**
- * Implementors of this class should
+ * Implementers of this interface should represent whatever the application considers to be the current user.
+ *
  * @author Steve Chaloner (steve@objectify.be).
  */
 public interface RoleHolder
