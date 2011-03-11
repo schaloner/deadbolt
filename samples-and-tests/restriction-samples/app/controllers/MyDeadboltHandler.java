@@ -18,6 +18,7 @@ package controllers;
 import controllers.deadbolt.Deadbolt;
 import controllers.deadbolt.DeadboltHandler;
 import controllers.deadbolt.ExternalizedRestrictionsAccessor;
+import controllers.deadbolt.RestrictedResourcesHandler;
 import deadbolt.MyExternalizedRestrictionsAccessor;
 import models.MyRoleHolder;
 import models.deadbolt.RoleHolder;
@@ -53,5 +54,10 @@ public class MyDeadboltHandler implements DeadboltHandler
     public ExternalizedRestrictionsAccessor getExternalizedRestrictionsAccessor()
     {
         return new MyExternalizedRestrictionsAccessor();
+    }
+
+    public RestrictedResourcesHandler getRestrictedResourcesHandler()
+    {
+        return new MyRestrictedResourcesHandler();
     }
 }

@@ -48,4 +48,11 @@ public interface DeadboltHandler
      * @return the accessor for externalised restrictions.  May be null.
      */
     ExternalizedRestrictionsAccessor getExternalizedRestrictionsAccessor();
+
+    /**
+     * Gets the handler used for dealing with resources restricted to specific users/groups.
+     *
+     * @return the handler for restricted resources.  May be null.
+     */
+    RestrictedResourcesHandler getRestrictedResourcesHandler();
 }

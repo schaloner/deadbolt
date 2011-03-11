@@ -46,4 +46,12 @@ public abstract class AbstractDeadboltHandler implements DeadboltHandler
     {
         return null;
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public RestrictedResourcesHandler getRestrictedResourcesHandler()
+    {
+        return null;
+    }
 }

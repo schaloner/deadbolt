@@ -13,25 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package controllers.deadbolt;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+package models.deadbolt;
 
 /**
- * Specifies access to a controller class or controller method based on roles.
- *
- * @author Steve Chaloner (steve@objectify.be).
+ * @author Steve Chaloner (steve@objectify.be)
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.TYPE})
-@Documented
-@Inherited
-public @interface Restrictions
+public enum AccessResult
 {
-    Restrict[] value();
+    ALLOWED,
+    DENIED,
+    NOT_SPECIFIED
 }

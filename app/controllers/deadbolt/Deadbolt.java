@@ -15,6 +15,7 @@
  */
 package controllers.deadbolt;
 
+import models.deadbolt.AccessResult;
 import models.deadbolt.ExternalizedRestriction;
 import models.deadbolt.ExternalizedRestrictions;
 import models.deadbolt.Role;
@@ -71,9 +72,68 @@ public class Deadbolt extends Controller
 
         RoleHolder roleHolder = DEADBOLT_HANDLER.getRoleHolder();
 
+        handleDynamicChecks(roleHolder);
+        handleStaticChecks(roleHolder);
+    }
+
+    @Util
+    static void handleDynamicChecks(RoleHolder roleHolder)throws Throwable
+    {
+        handleRestrictedResources(roleHolder);
+    }
+
+    @Util
+    static void handleStaticChecks(RoleHolder roleHolder)throws Throwable
+    {
         handleRestrict(roleHolder);
         handleRestrictions(roleHolder);
         handleExternalRestrictions(roleHolder);
+    }
+
+    @Util
+    static void handleRestrictedResources(RoleHolder roleHolder) throws Throwable
+    {
+        RestrictedResource restrictedResource = getActionAnnotation(RestrictedResource.class);
+        if (restrictedResource == null)
+        {
+            restrictedResource = getControllerInheritedAnnotation(RestrictedResource.class);
+        }
+
+        if (restrictedResource != null)
+        {
+            RestrictedResourcesHandler restrictedResourcesHandler = DEADBOLT_HANDLER.getRestrictedResourcesHandler();
+
+            if (restrictedResourcesHandler == null)
+            {
+                Logger.fatal("A RestrictedResource is specified but no RestrictedResourcesHandler is available.  Denying access to resource.");
+            }
+            else
+            {
+                String name = restrictedResource.name();
+                AccessResult accessResult = restrictedResourcesHandler.checkAccess(name);
+                switch (accessResult)
+                {
+                    case DENIED:
+                        accessFailed();
+                        break;
+                    case NOT_SPECIFIED:
+                        if (restrictedResource.staticFallback())
+                        {
+                            Logger.info("Access for [%s] not defined for current user - processing further with other Deadbolt annotations",
+                                        name);
+                            handleStaticChecks(roleHolder);
+                        }
+                        else
+                        {
+                            accessFailed();
+                        }
+                        break;
+                    default:
+                        Logger.debug("RestrictedResource - access allowed for [%s]",
+                                     name);
+                }
+            }
+        }
     }
 
     @Util
@@ -249,6 +309,45 @@ public class Deadbolt extends Controller
                roleHolder.getRoles() != null &&
                hasAllRoles(roleHolder,
                            roleNames.toArray(new String[roleNames.size()]));
+    }
+
+    public static boolean checkRestrictedResource(String resourceKey,
+                                                  Boolean allowUnspecified)
+    {
+        DEADBOLT_HANDLER.beforeRoleCheck();
+
+        RestrictedResourcesHandler restrictedResourcesHandler = DEADBOLT_HANDLER.getRestrictedResourcesHandler();
+        boolean accessedAllowed = false;
+
+        if (restrictedResourcesHandler == null)
+        {
+            Logger.fatal("A RestrictedResource is specified but no RestrictedResourcesHandler is available.  Denying access to resource.");
+        }
+        else
+        {
+            AccessResult accessResult = restrictedResourcesHandler.checkAccess(resourceKey);
+            switch (accessResult)
+            {
+                case ALLOWED:
+                    accessedAllowed = true;
+                    break;
+                case NOT_SPECIFIED:
+                    allowUnspecified = allowUnspecified != null && allowUnspecified;
+                    Logger.info("Access for [%s] not defined for current user - specified behaviour is [%s]",
+                                resourceKey,
+                                allowUnspecified ? "allow" : "deny");
+                    if (allowUnspecified)
+                    {
+                        accessedAllowed = true;
+                    }
+                    break;
+                default:
+                    Logger.debug("RestrictedResource - access allowed for [%s]",
+                                 resourceKey);
+            }
+        }
+
+        return accessedAllowed;
     }
 
     public static void forbidden()

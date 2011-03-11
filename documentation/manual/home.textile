@@ -75,6 +75,10 @@ This method is invoked when a restricted resource is accessed without permission
 
 If your application externalized restrictions, e.g. in a database or XML file, you will need to provide a way to access them by implementing an ExternalizedRestrictionsAccessor.  That implementation can then be passed into Deadbolt by returning it from this method.  If you don't use external restrictions in your app, you can safely return null from this method.
 
+* RestrictedResourcesHandler getRestrictedResourcesHandler()
+
+If your application supports dynamic restrictions, you will need to provide a way to evaluate them by implementing a RestrictedResourcesHandler.  That implementation can then be passed into Deadbolt by returning it from this method.  If you don't use dynamic restrictions in your app, you can safely return null from this method.
+
 Once you've implemented DeadboltHandler, you can declare it in your application.conf file.  Don't forget a no-args constructor is required!
 
 bc. deadbolt.handler=controllers.MyDeadboltHandler
@@ -84,17 +88,66 @@ If you want to have different DeadboltHandlers used in different contexts, the s
 bc. %production.deadbolt.handler=controllers.ProductionDeadboltHandler
 %test.deadbolt.handler=controllers.TestDeadboltHandler
 
-h3. Securing controllers
+h3. Connecting Deadbolt to your controllers
 
 Controllers are secured using the @With annotation to ensure method calls are checked against the current user.
 
 bc. @With(Deadbolt.class)
 public class MyController extends Controller
 
+
+h2. Dynamic restrictions
+
+Dynamic restrictions are completely arbitrary, and work by naming a resource - class, method or view - and then passing that name to a handler implemented by you.  You can then use this name to check roles belonging to the current user, the roles belonging to a group the current user is in, the time of day...it's completely arbitrary.  Dynamic restrictions take precedence over static restrictions.
+
+h3. RestrictedResourcesHandler
+
+RestrictedResourceHandlers are used to determine access to a resource.  DeadboltHandler has a getRestrictedResourcesHandler() method from which you can return a handler - or one of several handlers, again based on arbitrary reasons - which will be passed the name of the resource. From that point on, it's up to you to decide the access.  Access requests can have one of three results - ALLOWED, DENIED or NOT_SPECIFIED.  The first two are self-explanatory, whereas the third is a bit more complicated.  You may decide that if you can't determine if access to a resource - for example, your database might not map the current user to the resource - then access should be denied.  However, you could return NOT_SPECIFIED which - if the RestrictedResource staticFallback parameter is true - would make Deadbolt drop back to static Deadbolt restrictions.
+
+h3. Securing controllers
+
+The @RestrictedResource annotation is used to mark a source as having dynamic security.  It takes a mandatory name value, which should be unique if you want fine-grained control, and an optional boolean to indicate if integration with static restrictions should be allowed.  The RestrictedResource annotation can be set at the class or method level.
+
+bc. // This restricts access to the list method according to how your RestrictedResourcesHandler deals with the name "foo".  If NOT_SPECIFIED is returned, access is denied.
+@RestrictedResource(name = "foo")
+public static void list()
+
+bc. // This restricts access to the list method according to how your RestrictedResourcesHandler deals with the name "foo".  If NOT_SPECIFIED is returned, access is allowed.
+@RestrictedResource(name = "foo", staticFallback = true)
+public static void list()
+
+bc. // This restricts access to the list method according to how your RestrictedResourcesHandler deals with the name "foo".  If NOT_SPECIFIED is returned, access is determined by the Restrict annotation.
+@RestrictedResource(name = "foo", staticFallback = true)
+@Restrict("foo")
+public static void list()
+
+
+h3. Securing views
+
+Views are secured with the deadbolt.restrictedResource tag.
+
+bc. #{deadbolt.restrictedResource resourceKey:'resourceA'}
+    this restricts access to this content to how you deal with "resourceA".  If NOT_SPECIFIED is returned, access is denied.
+#{/deadbolt.restrictedResource}
+
+bc. #{deadbolt.restrictedResource resourceKey:'resourceA', allowUnspecified:false}
+    this restricts access to this content to how you deal with "resourceA".  If NOT_SPECIFIED is returned, access is denied.
+#{/deadbolt.restrictedResource}
+
+bc. #{deadbolt.restrictedResource resourceKey:'resourceA', allowUnspecified:true}
+    this restricts access to this content to how you deal with "resourceA".  If NOT_SPECIFIED is returned, access is allowed.
+#{/deadbolt.restrictedResource}
+
+
+h2. Static restrictions
+
+Static restrictions work by specifying hard-coded information into your controllers and views.
+
+h3. Securing controllers
+
 Rolenames are matched against result of the Role.getRoleName() method of the roles return from RoleHolder#getRoles().
 
 There are two annotations available to define access to a controller method - @Restrict, and @Restrictions.
-
 
 h3. @Restrict
 
@@ -170,7 +223,8 @@ bc. #{deadbolt.restrict roles:[['foo', 'bar', 'gee']]}
 
 h3. Externalised restrictions
 
-Deadbolt allows you to annotation controller classes and methods with named restriction trees.
+Deadbolt allows you to annotation controller classes and methods with named restriction trees.  It's debatable whether this can
+be classed as a static restriction, but since it works along the same lines as the truly static mechanisms I'm not going to split hairs.
 
 bc. @ExternalRestrictions("admin-only")
 public static void edit()

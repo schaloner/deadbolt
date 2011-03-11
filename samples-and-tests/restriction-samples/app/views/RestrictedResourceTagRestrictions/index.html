@@ -1,0 +1,42 @@
+<p>The following box should contain text</p>
+<div style="border: 1px solid #000000">
+    #{deadbolt.restrictedResource resourceKey:'resourceA'}
+    blah blah blah
+    #{/deadbolt.restrictedResource}
+</div>
+<br/>
+<br/>
+<p>The following box should contain text</p>
+<div style="border: 1px solid #000000">
+    #{deadbolt.restrictedResource resourceKey:'resourceB', allowUnspecified:true}
+    blah blah blah
+    #{/deadbolt.restrictedResource}
+</div>
+<br/>
+<br/>
+<p>The following box should contain text</p>
+<div style="border: 1px solid #000000">
+    #{deadbolt.restrictedResource resourceKey:'resourceB', allowUnspecified:true}
+    #{deadbolt.restrict roles:[['foo'], ['bar']]}
+    blah blah blah
+    #{/deadbolt.restrict}
+    #{/deadbolt.restrictedResource}
+</div>
+<br/>
+<br/>
+<p>The following box should not contain text</p>
+<div style="border: 1px solid #000000">
+    #{deadbolt.restrictedResource resourceKey:'resourceB'}
+    blah blah blah
+    #{/deadbolt.restrictedResource}
+</div>
+<br/>
+<br/>
+<p>The following box should not contain text</p>
+<div style="border: 1px solid #000000">
+    #{deadbolt.restrictedResource resourceKey:'resourceC'}
+    blah blah blah
+    #{/deadbolt.restrictedResource}
+</div>
+<br/>
+<br/>

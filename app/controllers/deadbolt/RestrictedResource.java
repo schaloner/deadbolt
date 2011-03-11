@@ -23,20 +23,27 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Specifies access to a controller class or controller method based on roles.
  *
- * @author Steve Chaloner (steve@objectify.be).
+ * @author Steve Chaloner (steve@objectify.be)
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
-@Documented
 @Inherited
-public @interface Restrict
+@Documented
+public @interface RestrictedResource
 {
     /**
-     * The role names of roles with access to the target.
+     * The name of the resource.
      *
-     * @return the role names
+     * @return the name of the resource
      */
-    String[] value();
+    String name();
+
+    /**
+     * Indicates if further security checking should be done using the static role checking in cases
+     * where a restricted resource check gives a {@link models.deadbolt.AccessResult#NOT_SPECIFIED} result.
+     *
+     * @return true if Deadbolt should apply @Restrict and @Restrictions checks
+     */
+    boolean staticFallback() default false;
 }

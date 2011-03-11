@@ -10,4 +10,5 @@ h2. Features
 * Define access using AND, OR and NOT combinations
 * Define access at the class, method or view level
 * Define permissions at the database level, allowing you change them instantly without redeploying
+* Define restricted resources at the class, method or view level and control access to them on an artibrarily fine-grained level.  You can also drop back to other restrictions to allow specific and general cases in the same combination.
 * Combine all of the above to get the best fit for your application

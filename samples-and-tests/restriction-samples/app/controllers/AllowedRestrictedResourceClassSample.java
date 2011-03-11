@@ -13,30 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package controllers.deadbolt;
+package controllers;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import controllers.deadbolt.Deadbolt;
+import controllers.deadbolt.Restrict;
+import controllers.deadbolt.RestrictedResource;
+import play.mvc.Controller;
+import play.mvc.With;
 
 /**
- * Specifies access to a controller class or controller method based on roles.
- *
  * @author Steve Chaloner (steve@objectify.be).
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.TYPE})
-@Documented
-@Inherited
-public @interface Restrict
+@With(Deadbolt.class)
+@RestrictedResource(name = "resourceA")
+public class AllowedRestrictedResourceClassSample extends Controller
 {
-    /**
-     * The role names of roles with access to the target.
-     *
-     * @return the role names
-     */
-    String[] value();
+    public static void index()
+    {
+        render("authorised.html");
+    }
 }

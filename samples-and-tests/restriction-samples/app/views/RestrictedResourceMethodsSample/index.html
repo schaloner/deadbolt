@@ -1,0 +1,18 @@
+<div>Authorised</div>
+<p>Each of the following links should lead to a valid page</p>
+<ul>
+    <li><a href="@{RestrictedResourceMethodsSample.allowed}">Allowed</a></li>
+    <li><a href="@{RestrictedResourceMethodsSample.notSpecifiedWithStaticFallbackAndNoStaticRestrictions}">Not specified, with static restriction checking enabled and no static restrictions present</a></li>
+    <li><a href="@{RestrictedResourceMethodsSample.notSpecifiedWithStaticFallbackAndOkStaticRestriction}">Not specified, with static restriction checking enabled and a static restriction that permits access</a></li>
+</ul>
+
+<br/>
+<br/>
+
+<div>Unauthorised</div>
+<p>Each of the following links should lead to a forbidden page</p>
+<ul>
+    <li><a href="@{RestrictedResourceMethodsSample.notSpecified}">Not specified</a></li>
+    <li><a href="@{RestrictedResourceMethodsSample.notSpecifiedWithStaticFallbackAndBlockingStaticRestriction}">Not specified, with static restriction checking enabled and a static restriction that blocks</a></li>
+    <li><a href="@{RestrictedResourceMethodsSample.denied}">Denied</a></li>
+</ul>
