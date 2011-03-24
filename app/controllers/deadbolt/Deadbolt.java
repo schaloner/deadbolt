@@ -268,7 +268,10 @@ public class Deadbolt extends Controller
             List<String> heldRoles = new ArrayList<String>();
             for (Role role : roles)
             {
-                heldRoles.add(role.getRoleName());
+                if (role != null)
+                {
+                    heldRoles.add(role.getRoleName());
+                }
             }
 
             boolean roleCheckResult = true;

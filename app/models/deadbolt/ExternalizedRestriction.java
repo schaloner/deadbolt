@@ -18,6 +18,7 @@ package models.deadbolt;
 import java.util.List;
 
 /**
+ * Defines a restriction whose role names are stored external to the source.
  *
  * @author Steve Chaloner (steve@objectify.be).
  */
@@ -26,7 +27,7 @@ public interface ExternalizedRestriction
     /**
      * Gets the role names required to get by this restriction.
      *
-     * @return
+     * @return the role names
      */
     List<String> getRoleNames();
 }
