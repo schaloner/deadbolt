@@ -32,25 +32,25 @@ public class RestrictedResourceMethodsSample extends Controller
         render();
     }
 
-    @RestrictedResource(name = "resourceA")
+    @RestrictedResource(name = {"resourceA"})
     public static void allowed()
     {
         render("authorised.html");
     }
 
-    @RestrictedResource(name = "resourceB")
+    @RestrictedResource(name = {"resourceB"})
     public static void notSpecified()
     {
         render("unauthorised.html");
     }
 
-    @RestrictedResource(name = "resourceB", staticFallback = true)
+    @RestrictedResource(name = {"resourceB"}, staticFallback = true)
     public static void notSpecifiedWithStaticFallbackAndNoStaticRestrictions()
     {
         render("authorised.html");
     }
 
-    @RestrictedResource(name = "resourceB", staticFallback = true)
+    @RestrictedResource(name = {"resourceB"}, staticFallback = true)
     @Restrict("oof")
     public static void notSpecifiedWithStaticFallbackAndBlockingStaticRestriction()
     {

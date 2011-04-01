@@ -1,0 +1,21 @@
+.controllerReportTable {
+    margin-bottom: 15px;
+    border: solid 1px #000000;
+}
+
+.controllerNameElement {
+    font-weight: bolder;
+    border-bottom: solid 1px #000000;
+}
+
+.methodRow {
+    border-bottom: 1px solid #000000;
+}
+
+.staticCheck {
+    background-color:#cdebff;
+}
+
+.dynamicCheck {
+    background-color:#c7ffbd;
+}

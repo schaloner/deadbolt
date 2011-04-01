@@ -28,6 +28,8 @@ import play.mvc.Controller;
 import play.mvc.Util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -109,8 +111,8 @@ public class Deadbolt extends Controller
             }
             else
             {
-                String name = restrictedResource.name();
-                AccessResult accessResult = restrictedResourcesHandler.checkAccess(name);
+                String[] names = restrictedResource.name();
+                AccessResult accessResult = restrictedResourcesHandler.checkAccess(names == null ? Collections.<String>emptyList() : Arrays.asList(names));
                 switch (accessResult)
                 {
                     case DENIED:
@@ -120,7 +122,7 @@ public class Deadbolt extends Controller
                         if (restrictedResource.staticFallback())
                         {
                             Logger.info("Access for [%s] not defined for current user - processing further with other Deadbolt annotations",
-                                        name);
+                                        names);
                             handleStaticChecks(roleHolder);
                         }
                         else
@@ -130,7 +132,7 @@ public class Deadbolt extends Controller
                         break;
                     default:
                         Logger.debug("RestrictedResource - access allowed for [%s]",
-                                     name);
+                                     names);
                 }
             }
         }
@@ -314,7 +316,7 @@ public class Deadbolt extends Controller
                            roleNames.toArray(new String[roleNames.size()]));
     }
 
-    public static boolean checkRestrictedResource(String resourceKey,
+    public static boolean checkRestrictedResource(List<String> resourceKeys,
                                                   Boolean allowUnspecified)
     {
         DEADBOLT_HANDLER.beforeRoleCheck();
@@ -328,7 +330,7 @@ public class Deadbolt extends Controller
         }
         else
         {
-            AccessResult accessResult = restrictedResourcesHandler.checkAccess(resourceKey);
+            AccessResult accessResult = restrictedResourcesHandler.checkAccess(resourceKeys);
             switch (accessResult)
             {
                 case ALLOWED:
@@ -337,7 +339,7 @@ public class Deadbolt extends Controller
                 case NOT_SPECIFIED:
                     allowUnspecified = allowUnspecified != null && allowUnspecified;
                     Logger.info("Access for [%s] not defined for current user - specified behaviour is [%s]",
-                                resourceKey,
+                                resourceKeys,
                                 allowUnspecified ? "allow" : "deny");
                     if (allowUnspecified)
                     {
@@ -346,7 +348,7 @@ public class Deadbolt extends Controller
                     break;
                 default:
                     Logger.debug("RestrictedResource - access allowed for [%s]",
-                                 resourceKey);
+                                 resourceKeys);
             }
         }
 

@@ -24,7 +24,7 @@ import play.mvc.With;
  * @author Steve Chaloner (steve@objectify.be).
  */
 @With(Deadbolt.class)
-@RestrictedResource(name = "resourceC")
+@RestrictedResource(name = {"resourceC"})
 public class DenyRestrictedResourceClassSample extends Controller
 {
     public static void index()

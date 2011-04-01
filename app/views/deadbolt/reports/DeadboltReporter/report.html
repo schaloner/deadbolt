@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Deadbolt report for ${projectReport.projectName}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <link rel="stylesheet" type="text/css" media="screen" href="@{'/public/stylesheets/report.css'}">
+    #{get 'moreStyles' /}
+    #{get 'moreScripts' /}
+</head>
+<body>
+<h2>Deadbolt report for ${projectReport.projectName}</h2>
+#{list items:projectReport.controllerReports, as:'controllerReport'}
+    <table style="width: 100%" class="controllerReportTable">
+        <tr class="controllerNameRow">
+            <td colspan="2"  class="controllerNameElement">${controllerReport.name}</td>
+        </tr>
+        #{list items:controllerReport.methodReports, as:'methodReport'}
+        <tr class="methodRow">
+            <td class="methodNameRow">${methodReport.name}</td>
+            <td>
+                <div class="dynamicCheck">
+                    <ul>
+                        #{list items:methodReport.dynamicChecks, as:'dynamicCheck'}
+                        <li>${dynamicCheck}</li>
+                        #{/list}
+                    </ul>
+                </div>
+                <ul>
+                    #{list items:methodReport.staticChecks, as:'staticCheck'}
+                    <li>${staticCheck}</li>
+                    #{/list}
+                </ul>
+            </td>
+        </tr>
+        #{/list}
+    </table>
+#{/list}
+</body>
+</html>

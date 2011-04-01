@@ -18,6 +18,8 @@ package controllers;
 import controllers.deadbolt.RestrictedResourcesHandler;
 import models.deadbolt.AccessResult;
 
+import java.util.List;
+
 /**
  * @author Steve Chaloner (steve@objectify.be)
  */
@@ -36,17 +38,17 @@ public class MyRestrictedResourcesHandler implements RestrictedResourcesHandler
      *
      * {@inheritDoc}
      */
-    public AccessResult checkAccess(String resourceName)
+    public AccessResult checkAccess(List<String> resourceNames)
     {
         // This could be hitting a database to check the resource name against that of the current user, but for pure
         // convenience it's hard-coded here.
 
         AccessResult result = AccessResult.DENIED;
-        if ("resourceA".equals(resourceName))
+        if ("resourceA".equals(resourceNames.get(0)))
         {
             result = AccessResult.ALLOWED;
         }
-        else if ("resourceB".equals(resourceName))
+        else if ("resourceB".equals(resourceNames.get(0)))
         {
             result = AccessResult.NOT_SPECIFIED;
         }

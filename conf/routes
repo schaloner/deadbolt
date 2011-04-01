@@ -5,4 +5,4 @@
 #
 # ~~~~
 
-GET     /?                      Module.index
+GET     /@deadbolt              deadbolt.reports.DeadboltReporter.report

@@ -37,7 +37,7 @@ public @interface RestrictedResource
      *
      * @return the name of the resource
      */
-    String name();
+    String[] name();
 
     /**
      * Indicates if further security checking should be done using the static role checking in cases

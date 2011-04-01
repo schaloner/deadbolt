@@ -1,6 +1,6 @@
 %{
     boolean allowUnspecified = _allowUnspecified != null && _allowUnspecified;
-    boolean allowAccess = controllers.deadbolt.Deadbolt.checkRestrictedResource(_resourceKey, allowUnspecified);
+    boolean allowAccess = controllers.deadbolt.Deadbolt.checkRestrictedResource(_resourceKeys, allowUnspecified)
 }%
 #{if allowAccess}
     #{doBody /}

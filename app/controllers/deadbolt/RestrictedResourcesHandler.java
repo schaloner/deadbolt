@@ -17,6 +17,8 @@ package controllers.deadbolt;
 
 import models.deadbolt.AccessResult;
 
+import java.util.List;
+
 /**
  * @author Steve Chaloner (steve@objectify.be)
  */
@@ -33,9 +35,10 @@ public interface RestrictedResourcesHandler
      * Restrictions annotations are processed.  Note that if no Restrict or Restrictions annotations are present,
      * access will be allowed.</li>
      * </ul>
-     * @param resourceName the name of the resource
+     *
+     * @param resourceNames the names of the resource
      * @return {@link AccessResult#ALLOWED} if access is permitted.  {@link AccessResult#DENIED} if access is denied.
      * {@link AccessResult#NOT_SPECIFIED} if access is not specified.
      */
-    AccessResult checkAccess(String resourceName);
+    AccessResult checkAccess(List<String> resourceNames);
 }

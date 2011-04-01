@@ -8,5 +8,7 @@ GET     /                                       Application.index
 # Map static resources from the /app/public folder to the /public path
 GET     /public/                                staticDir:public
 
+*       /                                       module:deadbolt
+
 # Catch all
 *       /{controller}/{action}                  {controller}.{action}

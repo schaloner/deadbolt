@@ -109,15 +109,15 @@ h3. Securing controllers
 The @RestrictedResource annotation is used to mark a source as having dynamic security.  It takes a mandatory name value, which should be unique if you want fine-grained control, and an optional boolean to indicate if integration with static restrictions should be allowed.  The RestrictedResource annotation can be set at the class or method level.
 
 bc. // This restricts access to the list method according to how your RestrictedResourcesHandler deals with the name "foo".  If NOT_SPECIFIED is returned, access is denied.
-@RestrictedResource(name = "foo")
+@RestrictedResource(name = {"foo"})
 public static void list()
 
 bc. // This restricts access to the list method according to how your RestrictedResourcesHandler deals with the name "foo".  If NOT_SPECIFIED is returned, access is allowed.
-@RestrictedResource(name = "foo", staticFallback = true)
+@RestrictedResource(name = {"foo"}, staticFallback = true)
 public static void list()
 
 bc. // This restricts access to the list method according to how your RestrictedResourcesHandler deals with the name "foo".  If NOT_SPECIFIED is returned, access is determined by the Restrict annotation.
-@RestrictedResource(name = "foo", staticFallback = true)
+@RestrictedResource(name = {"foo"}, staticFallback = true)
 @Restrict("foo")
 public static void list()
 
@@ -126,15 +126,15 @@ h3. Securing views
 
 Views are secured with the deadbolt.restrictedResource tag.
 
-bc. #{deadbolt.restrictedResource resourceKey:'resourceA'}
+bc. #{deadbolt.restrictedResource resourceKey:['resourceA']}
     this restricts access to this content to how you deal with "resourceA".  If NOT_SPECIFIED is returned, access is denied.
 #{/deadbolt.restrictedResource}
 
-bc. #{deadbolt.restrictedResource resourceKey:'resourceA', allowUnspecified:false}
-    this restricts access to this content to how you deal with "resourceA".  If NOT_SPECIFIED is returned, access is denied.
+bc. #{deadbolt.restrictedResource resourceKey:['resourceA', 'someMetaInfo'], allowUnspecified:false}
+    this restricts access to this content to how you deal with "resourceA", possibly informed by someMetaInfo.  If NOT_SPECIFIED is returned, access is denied.
 #{/deadbolt.restrictedResource}
 
-bc. #{deadbolt.restrictedResource resourceKey:'resourceA', allowUnspecified:true}
+bc. #{deadbolt.restrictedResource resourceKey:['resourceA'], allowUnspecified:true}
     this restricts access to this content to how you deal with "resourceA".  If NOT_SPECIFIED is returned, access is allowed.
 #{/deadbolt.restrictedResource}
 
