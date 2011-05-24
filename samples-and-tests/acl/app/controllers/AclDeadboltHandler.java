@@ -18,7 +18,7 @@ package controllers;
 import controllers.deadbolt.DeadboltHandler;
 import controllers.deadbolt.ExternalizedRestrictionsAccessor;
 import controllers.deadbolt.RestrictedResourcesHandler;
-import models.User;
+import model.AclUser;
 import models.deadbolt.ExternalizedRestrictions;
 import models.deadbolt.RoleHolder;
 import play.mvc.Controller;
@@ -26,8 +26,10 @@ import play.mvc.Controller;
 /**
  * @author Steve Chaloner (steve@objectify.be)
  */
-public class MyDeadboltHandler extends Controller implements DeadboltHandler
+public class AclDeadboltHandler extends Controller implements DeadboltHandler
 {
+    private static final RestrictedResourcesHandler RESTRICTED_RESOURCES_HANDLER = new AclRestrictedResourcesHandler();
+
     public void beforeRoleCheck()
     {
         // Note that if you provide your own implementation of Secure's Security class you would refer to that instead
@@ -51,7 +53,7 @@ public class MyDeadboltHandler extends Controller implements DeadboltHandler
     public RoleHolder getRoleHolder()
     {
         String userName = Secure.Security.connected();
-        return User.getByUserName(userName);
+        return AclUser.getByUserName(userName);
     }
 
     public void onAccessFailure(String controllerClassName)
@@ -72,6 +74,6 @@ public class MyDeadboltHandler extends Controller implements DeadboltHandler
 
     public RestrictedResourcesHandler getRestrictedResourcesHandler()
     {
-        return null;
+        return RESTRICTED_RESOURCES_HANDLER;
     }
 }

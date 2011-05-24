@@ -1,0 +1,37 @@
+#{extends 'main.html' /}
+#{set title:targetUser.fullName /}
+
+#{deadbolt.restrictedResource resourceKeys:['friends']}
+<div style="border: 1px solid #000000; margin-bottom: 15px">
+    <h3>Friends</h3>
+    <ul>
+        #{list items:targetUser.friends, as:'friend'}
+        <li>
+            <a href="@{AclApplication.index(friend.userName)}">${friend.fullName}</a>
+        </li>
+        #{/list}
+    </ul>
+</div>
+#{/deadbolt.restrictedResource}
+
+#{deadbolt.restrictedResource resourceKeys:['statusUpdates']}
+<div style="border: 1px solid #000000; margin-bottom: 15px">
+    <h3>Status updates</h3>
+    <ul>
+        #{list items:targetUser.statusUpdates, as:'statusUpdate'}
+            <li>${statusUpdate.status}</li>
+        #{/list}
+    </ul>
+</div>
+#{/deadbolt.restrictedResource}
+
+#{deadbolt.restrictedResource resourceKeys:['photos']}
+<div style="border: 1px solid #000000; margin-bottom: 15px">
+    <h3>Photos</h3>
+    <ul>
+        #{list items:targetUser.photos, as:'photo'}
+            <li>${photo.description}</li>
+        #{/list}
+    </ul>
+</div>
+#{/deadbolt.restrictedResource}

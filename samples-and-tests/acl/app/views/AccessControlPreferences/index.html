@@ -1,0 +1,43 @@
+#{extends 'main.html' /}
+#{set title:'Access control preferences' /}
+
+<form action="@{AccessControlPreferences.update()}" method="POST">
+    <input type="hidden" name="preference.id" value="${preference.id}"/>
+    <table>
+        <tr>
+            <td>Friend visibility</td>
+            <td>
+                <select name="preference.friendVisibility">
+                    #{list items:model.AccessControlPreference.AccessChain.values(), as:'accessChain'}
+                    <option value="${accessChain}" ${preference.friendVisibility == accessChain ? 'selected' : ''}>${accessChain}</option>
+                    #{/list}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>Status visibility</td>
+            <td>
+                <select name="preference.statusVisibility">
+                    #{list items:model.AccessControlPreference.AccessChain.values(), as:'accessChain'}
+                    <option value="${accessChain}" ${preference.statusVisibility == accessChain ? 'selected' : ''}>${accessChain}</option>
+                    #{/list}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>Photo visibility</td>
+            <td>
+                <select name="preference.photoVisibility">
+                    #{list items:model.AccessControlPreference.AccessChain.values(), as:'accessChain'}
+                    <option value="${accessChain}" ${preference.photoVisibility == accessChain ? 'selected' : ''}>${accessChain}</option>
+                    #{/list}
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input type="submit"/>
+            </td>
+        </tr>
+    </table>
+</form>
