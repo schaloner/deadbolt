@@ -263,37 +263,40 @@ public class Deadbolt extends Controller
                                       String[] roleNames)
     {
         boolean hasRole = false;
-        List<? extends Role> roles = roleHolder.getRoles();
-
-        if (roles != null)
+        if (roleHolder != null)
         {
-            List<String> heldRoles = new ArrayList<String>();
-            for (Role role : roles)
-            {
-                if (role != null)
-                {
-                    heldRoles.add(role.getRoleName());
-                }
-            }
+            List<? extends Role> roles = roleHolder.getRoles();
 
-            boolean roleCheckResult = true;
-            for (int i = 0; roleCheckResult && i < roleNames.length; i++)
+            if (roles != null)
             {
-                boolean invert = false;
-                String roleName = roleNames[i];
-                if (roleName.startsWith("!"))
+                List<String> heldRoles = new ArrayList<String>();
+                for (Role role : roles)
                 {
-                    invert = true;
-                    roleName = roleName.substring(1);
+                    if (role != null)
+                    {
+                        heldRoles.add(role.getRoleName());
+                    }
                 }
-                roleCheckResult = heldRoles.contains(roleName);
 
-                if (invert)
+                boolean roleCheckResult = true;
+                for (int i = 0; roleCheckResult && i < roleNames.length; i++)
                 {
-                    roleCheckResult = !roleCheckResult;
+                    boolean invert = false;
+                    String roleName = roleNames[i];
+                    if (roleName.startsWith("!"))
+                    {
+                        invert = true;
+                        roleName = roleName.substring(1);
+                    }
+                    roleCheckResult = heldRoles.contains(roleName);
+
+                    if (invert)
+                    {
+                        roleCheckResult = !roleCheckResult;
+                    }
                 }
+                hasRole = roleCheckResult;
             }
-            hasRole = roleCheckResult;
         }
         return hasRole;
     }
