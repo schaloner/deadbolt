@@ -41,6 +41,10 @@ public class Deadbolt extends Controller
 {
     public static final String DEADBOLT_HANDLER_KEY = "deadbolt.handler";
 
+    public static final String CACHE_USER_KEY = "deadbolt.cache-user-per-request";
+
+    public static final String CACHE_PER_REQUEST = "deadbolt.cache-user";
+
     private static DeadboltHandler DEADBOLT_HANDLER;
 
     static
@@ -63,6 +67,22 @@ public class Deadbolt extends Controller
         }
     }
 
+    private static RoleHolder getRoleHolder()
+    {
+        RoleHolder roleHolder = (RoleHolder)request.args.get(CACHE_PER_REQUEST);
+        if (roleHolder == null)
+        {
+            roleHolder = DEADBOLT_HANDLER.getRoleHolder();
+            if (Boolean.valueOf(Play.configuration.getProperty(CACHE_USER_KEY, "false")))
+            {
+                request.args.put(CACHE_PER_REQUEST,
+                                 roleHolder);
+            }
+        }
+
+        return roleHolder;
+    }
+
     /**
      * Checks access to a class or method based on any {@link controllers.deadbolt.Restrict} or
      * {@link controllers.deadbolt.Restrictions} annotations.
@@ -72,7 +92,7 @@ public class Deadbolt extends Controller
     {
         DEADBOLT_HANDLER.beforeRoleCheck();
 
-        RoleHolder roleHolder = DEADBOLT_HANDLER.getRoleHolder();
+        RoleHolder roleHolder = getRoleHolder();
 
         handleDynamicChecks(roleHolder);
         handleStaticChecks(roleHolder);
@@ -311,7 +331,7 @@ public class Deadbolt extends Controller
     {
         DEADBOLT_HANDLER.beforeRoleCheck();
 
-        RoleHolder roleHolder = DEADBOLT_HANDLER.getRoleHolder();
+        RoleHolder roleHolder = getRoleHolder();
 
         return roleHolder != null &&
                roleHolder.getRoles() != null &&

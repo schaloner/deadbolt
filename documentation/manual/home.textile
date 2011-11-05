@@ -151,7 +151,7 @@ There are two annotations available to define access to a controller method - @R
 
 h3. @Restrict
 
-The @Restrict annotation defines a set of role names that are ANDed together.
+The @Restrict annotation defines a set of role names that are ANDed together.  RoleHolders with matching roles are allowed access.
 
 bc. // This restricts access to the list method to any role holder with a role whose name is "foo"
 @Restrict("foo")
@@ -177,7 +177,7 @@ public static void list()
 
 h3. Securing views
 
-Views are secured with the deadbolt.restrict tag.  This is slightly simpler than the annotations used by controllers, since the syntax is always that of @Restrictions, i.e. ORed role groups in the top level, ANDed roles groups in the inner level:
+Views are secured with the deadbolt.restrict tag.  This is slightly simpler than the annotations used by controllers, since the syntax is always that of @Restrictions, i.e. ORed role groups in the top level, ANDed roles groups in the inner level:  RoleHolders with matching roles are allowed access.
 
 bc. #{deadbolt.restrict roles:[['foo']]}
     this restricts access to this content to role holders with the "foo" role
@@ -280,3 +280,16 @@ The annotations detailed above can be applied in combination to controller class
 h3. Integrating with authentication systems
 
 For an example of how to integrate Deadbolt with an authentication module, please take a look at the integration-with-secure app in samples-and-tests - this uses the standard Secure module to illustrate the integration.
+
+h3. Caching the RoleHolder on a per-request basis
+
+It's fairly unlikely that the roles of a role holder will change within the request scope of that role holder (and if it did, you'd have a
+pretty non-deterministic application!).  Since it's possible that you may get the role holder from the database on every call to
+DeadboltHandler#getRoleHolder unless you're doing some caching, you can improve your performance a lot by performing per-request caching of the
+role holder.
+
+To enable this, add the following to your application.conf file:
+
+bc. deadbolt.cache-user-per-request=true
+
+If the property is not present or set to something other than true, the per-request caching will be disabled.  This is the default behaviour.
