@@ -175,6 +175,35 @@ bc. // This restricts access to the list method to any role holder with the "foo
 public static void list()
 
 
+h3. @RoleHolderPresent
+
+The @RoleHolderPresent annotation indicates that a role holder (i.e. the user is logged in) must be present to access the resource.  The annotation is inherited, so it can be declared on a controller that other controllers extend from.
+
+bc. // This restricts access to the list method to any role holder, regardless of roles.
+@RoleHolderPresent
+public static void list()
+
+bc. // This restricts access to the Foo controller to any role holder, regardless of roles.
+@RoleHolderPresent
+public class Foo extends Controller
+
+
+h3. @Unrestricted
+
+The @Unrestricted annotation unlocks a controller or method.  It is not inherited, and so needs to be declared on any controller that extends a restricted controller that you wish to be unrestricted.  It takes precedence over any declared restriction.
+
+bc. // This unrestricts access to the list method, even if the method is in a restricted controller.
+@Unrestricted
+public static void list()
+
+bc. // This unrestricts access to the Foo controller, even if the parent controller is restricted.
+@RoleHolderPresent
+public class Foo extends Controller
+
+Note that
+* Unrestricted controllers can still have restricted methods
+* Restricted controllers can have unrestricted methods
+
 h3. Securing views
 
 Views are secured with the deadbolt.restrict tag.  This is slightly simpler than the annotations used by controllers, since the syntax is always that of @Restrictions, i.e. ORed role groups in the top level, ANDed roles groups in the inner level:  RoleHolders with matching roles are allowed access.
@@ -190,6 +219,12 @@ bc. #{deadbolt.restrict roles:[['foo', 'bar']]}
 bc. #{deadbolt.restrict roles:[['foo'], ['bar']]}
     this restricts access to this content to role holders with the "foo" OR 'bar' role
 #{/deadbolt.restrict}
+
+If you want to restrict part of a view to any user that's logged in, regardless of their roles, you can use the deadbolt.roleHolderPresent tag, i.e.
+
+bc. #{deadbolt.roleHolderPresent}
+    this restricts access to this content to logged-in users
+#{/deadbolt.roleHolderPresent}
 
 
 h3. Negating role names

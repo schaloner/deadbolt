@@ -1,0 +1,28 @@
+#{extends 'main.html' /}
+
+<div>Authorised</div>
+<p>Each of the following links should lead to a valid page</p>
+<ul>
+    <li><a href="@{RoleHolderPresentController.index}">Unrestricted method in a controller that requires a role holder to be present</a></li>
+    <li><a href="@{SpecificRestrictionController.foo}">A method with specific restrictions which the role holder has</a></li>
+</ul>
+
+<br/>
+<br/>
+
+<div>Unauthorised</div>
+<p>Each of the following links should lead to a forbidden page</p>
+<ul>
+    <li><a href="@{SpecificRestrictionController.bar}">A method with specific restrictions which the role holder doesn't have</a></li>
+</ul>
+
+<br/>
+<br/>
+
+<div>Tags</div>
+<p>The following box should contain text</p>
+<div style="border: 1px solid #000000">
+    #{deadbolt.roleHolderPresent}
+    blah blah blah
+    #{/deadbolt.roleHolderPresent}
+</div>

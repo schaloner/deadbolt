@@ -96,16 +96,35 @@ public class Deadbolt extends Controller
 
         handleDynamicChecks(roleHolder);
         handleStaticChecks(roleHolder);
+        handleRoleHolderPresent(roleHolder);
     }
 
     @Util
-    static void handleDynamicChecks(RoleHolder roleHolder)throws Throwable
+    static void handleDynamicChecks(RoleHolder roleHolder) throws Throwable
     {
         handleRestrictedResources(roleHolder);
     }
 
     @Util
-    static void handleStaticChecks(RoleHolder roleHolder)throws Throwable
+    static void handleRoleHolderPresent(RoleHolder roleHolder) throws Throwable
+    {
+        if (roleHolder == null)
+        {
+            RoleHolderPresent roleHolderPresent = getActionAnnotation(RoleHolderPresent.class);
+            if (roleHolderPresent == null)
+            {
+                roleHolderPresent = getControllerInheritedAnnotation(RoleHolderPresent.class);
+            }
+
+            if (roleHolderPresent != null)
+            {
+                accessFailed();
+            }
+        }
+    }
+
+    @Util
+    static void handleStaticChecks(RoleHolder roleHolder) throws Throwable
     {
         handleRestrict(roleHolder);
         handleRestrictions(roleHolder);
@@ -115,44 +134,52 @@ public class Deadbolt extends Controller
     @Util
     static void handleRestrictedResources(RoleHolder roleHolder) throws Throwable
     {
-        RestrictedResource restrictedResource = getActionAnnotation(RestrictedResource.class);
-        if (restrictedResource == null)
+        Unrestricted actionUnrestricted = getActionAnnotation(Unrestricted.class);
+        if (actionUnrestricted == null)
         {
-            restrictedResource = getControllerInheritedAnnotation(RestrictedResource.class);
-        }
-
-        if (restrictedResource != null)
-        {
-            RestrictedResourcesHandler restrictedResourcesHandler = DEADBOLT_HANDLER.getRestrictedResourcesHandler();
-
-            if (restrictedResourcesHandler == null)
+            RestrictedResource restrictedResource = getActionAnnotation(RestrictedResource.class);
+            if (restrictedResource == null)
             {
-                Logger.fatal("A RestrictedResource is specified but no RestrictedResourcesHandler is available.  Denying access to resource.");
-            }
-            else
-            {
-                String[] names = restrictedResource.name();
-                AccessResult accessResult = restrictedResourcesHandler.checkAccess(names == null ? Collections.<String>emptyList() : Arrays.asList(names));
-                switch (accessResult)
+                actionUnrestricted = getControllerAnnotation(Unrestricted.class);
+                if (actionUnrestricted == null)
                 {
-                    case DENIED:
-                        accessFailed();
-                        break;
-                    case NOT_SPECIFIED:
-                        if (restrictedResource.staticFallback())
-                        {
-                            Logger.info("Access for [%s] not defined for current user - processing further with other Deadbolt annotations",
-                                        names);
-                            handleStaticChecks(roleHolder);
-                        }
-                        else
-                        {
+                    restrictedResource = getControllerInheritedAnnotation(RestrictedResource.class);
+                }
+            }
+
+            if (restrictedResource != null)
+            {
+                RestrictedResourcesHandler restrictedResourcesHandler = DEADBOLT_HANDLER.getRestrictedResourcesHandler();
+
+                if (restrictedResourcesHandler == null)
+                {
+                    Logger.fatal("A RestrictedResource is specified but no RestrictedResourcesHandler is available.  Denying access to resource.");
+                }
+                else
+                {
+                    String[] names = restrictedResource.name();
+                    AccessResult accessResult = restrictedResourcesHandler.checkAccess(names == null ? Collections.<String>emptyList() : Arrays.asList(names));
+                    switch (accessResult)
+                    {
+                        case DENIED:
                             accessFailed();
-                        }
-                        break;
-                    default:
-                        Logger.debug("RestrictedResource - access allowed for [%s]",
-                                     names);
+                            break;
+                        case NOT_SPECIFIED:
+                            if (restrictedResource.staticFallback())
+                            {
+                                Logger.info("Access for [%s] not defined for current user - processing further with other Deadbolt annotations",
+                                            names);
+                                handleStaticChecks(roleHolder);
+                            }
+                            else
+                            {
+                                accessFailed();
+                            }
+                            break;
+                        default:
+                            Logger.debug("RestrictedResource - access allowed for [%s]",
+                                         names);
+                    }
                 }
             }
         }
@@ -161,43 +188,51 @@ public class Deadbolt extends Controller
     @Util
     static void handleExternalRestrictions(RoleHolder roleHolder) throws Throwable
     {
-        ExternalRestrictions externalRestrictions = getActionAnnotation(ExternalRestrictions.class);
-        if (externalRestrictions == null)
+        Unrestricted actionUnrestricted = getActionAnnotation(Unrestricted.class);
+        if (actionUnrestricted == null)
         {
-            externalRestrictions = getControllerInheritedAnnotation(ExternalRestrictions.class);
-        }
-
-        if (externalRestrictions != null)
-        {
-            ExternalizedRestrictionsAccessor externalisedRestrictionsAccessor =
-                    DEADBOLT_HANDLER.getExternalizedRestrictionsAccessor();
-
-            boolean roleOk = false;
-            if (externalisedRestrictionsAccessor == null)
+            ExternalRestrictions externalRestrictions = getActionAnnotation(ExternalRestrictions.class);
+            if (externalRestrictions == null)
             {
-                Logger.fatal("@ExternalRestrictions are specified but no ExternalizedRestrictionsAccessor is available.  Denying access to resource.");
-            }
-            else
-            {
-                for (String externalRestrictionTreeName : externalRestrictions.value())
+                actionUnrestricted = getControllerAnnotation(Unrestricted.class);
+                if (actionUnrestricted == null)
                 {
-                    ExternalizedRestrictions externalizedRestrictions =
-                            externalisedRestrictionsAccessor.getExternalizedRestrictions(externalRestrictionTreeName);
-                    if (externalizedRestrictions != null)
+                    externalRestrictions = getControllerInheritedAnnotation(ExternalRestrictions.class);
+                }
+            }
+
+            if (externalRestrictions != null)
+            {
+                ExternalizedRestrictionsAccessor externalisedRestrictionsAccessor =
+                        DEADBOLT_HANDLER.getExternalizedRestrictionsAccessor();
+
+                boolean roleOk = false;
+                if (externalisedRestrictionsAccessor == null)
+                {
+                    Logger.fatal("@ExternalRestrictions are specified but no ExternalizedRestrictionsAccessor is available.  Denying access to resource.");
+                }
+                else
+                {
+                    for (String externalRestrictionTreeName : externalRestrictions.value())
                     {
-                        List<ExternalizedRestriction> restrictions = externalizedRestrictions.getExternalisedRestrictions();
-                        for (ExternalizedRestriction restriction : restrictions)
+                        ExternalizedRestrictions externalizedRestrictions =
+                                externalisedRestrictionsAccessor.getExternalizedRestrictions(externalRestrictionTreeName);
+                        if (externalizedRestrictions != null)
                         {
-                            List<String> roleNames = restriction.getRoleNames();
-                            roleOk |= checkRole(roleHolder,
-                                                roleNames.toArray(new String[roleNames.size()]));
+                            List<ExternalizedRestriction> restrictions = externalizedRestrictions.getExternalisedRestrictions();
+                            for (ExternalizedRestriction restriction : restrictions)
+                            {
+                                List<String> roleNames = restriction.getRoleNames();
+                                roleOk |= checkRole(roleHolder,
+                                                    roleNames.toArray(new String[roleNames.size()]));
+                            }
                         }
                     }
                 }
-            }
-            if (!roleOk)
-            {
-                accessFailed();
+                if (!roleOk)
+                {
+                    accessFailed();
+                }
             }
         }
     }
@@ -205,24 +240,32 @@ public class Deadbolt extends Controller
     @Util
     static void handleRestrictions(RoleHolder roleHolder) throws Throwable
     {
-        Restrictions restrictions = getActionAnnotation(Restrictions.class);
-        if (restrictions == null)
+        Unrestricted actionUnrestricted = getActionAnnotation(Unrestricted.class);
+        if (actionUnrestricted == null)
         {
-            restrictions = getControllerInheritedAnnotation(Restrictions.class);
-        }
-
-        if (restrictions != null)
-        {
-            Restrict[] restrictArray = restrictions.value();
-            boolean roleOk = false;
-            for (int i = 0; !roleOk && i < restrictArray.length; i++)
+            Restrictions restrictions = getActionAnnotation(Restrictions.class);
+            if (restrictions == null)
             {
-                roleOk |= checkRole(roleHolder,
-                                    restrictArray[i].value());
+                actionUnrestricted = getControllerAnnotation(Unrestricted.class);
+                if (actionUnrestricted == null)
+                {
+                    restrictions = getControllerInheritedAnnotation(Restrictions.class);
+                }
             }
-            if (!roleOk)
+
+            if (restrictions != null)
             {
-                accessFailed();
+                Restrict[] restrictArray = restrictions.value();
+                boolean roleOk = false;
+                for (int i = 0; !roleOk && i < restrictArray.length; i++)
+                {
+                    roleOk |= checkRole(roleHolder,
+                                        restrictArray[i].value());
+                }
+                if (!roleOk)
+                {
+                    accessFailed();
+                }
             }
         }
     }
@@ -230,18 +273,26 @@ public class Deadbolt extends Controller
     @Util
     static void handleRestrict(RoleHolder roleHolder) throws Throwable
     {
-        Restrict restrict = getActionAnnotation(Restrict.class);
-        if (restrict == null)
+        Unrestricted actionUnrestricted = getActionAnnotation(Unrestricted.class);
+        if (actionUnrestricted == null)
         {
-            restrict = getControllerInheritedAnnotation(Restrict.class);
-        }
-
-        if (restrict != null)
-        {
-            if (!checkRole(roleHolder,
-                           restrict.value()))
+            Restrict restrict = getActionAnnotation(Restrict.class);
+            if (restrict == null)
             {
-                accessFailed();
+                actionUnrestricted = getControllerAnnotation(Unrestricted.class);
+                if (actionUnrestricted == null)
+                {
+                    restrict = getControllerInheritedAnnotation(Restrict.class);
+                }
+            }
+
+            if (restrict != null)
+            {
+                if (!checkRole(roleHolder,
+                               restrict.value()))
+                {
+                    accessFailed();
+                }
             }
         }
     }
@@ -319,6 +370,11 @@ public class Deadbolt extends Controller
             }
         }
         return hasRole;
+    }
+
+    public static boolean isRoleHolderPresent()
+    {
+        return getRoleHolder() != null;
     }
 
     /**

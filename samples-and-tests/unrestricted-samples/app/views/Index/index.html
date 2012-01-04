@@ -1,0 +1,20 @@
+#{extends 'main.html' /}
+
+<div>Authorised</div>
+<p>Each of the following links should lead to a valid page</p>
+<ul>
+    <li><a href="@{RestrictedController.unrestrictedMethod}">Unrestricted method in a restricted controller</a></li>
+    <li><a href="@{RestrictedController.restrictedAndUnrestrictedMethod}">A method in a restricted controller that is both restricted and unrestricted</a></li>
+    <li><a href="@{UnrestrictedController.unannotatedMethod}">An unannotated method in an @Unrestricted controller that extends a restricted controller.  Normally, this method would inherit its restrictions from the parent controller.</a></li>
+</ul>
+
+<br/>
+<br/>
+
+<div>Unauthorised</div>
+<p>Each of the following links should lead to a forbidden page</p>
+<ul>
+    <li><a href="@{RestrictedController.index}">Unannotated method in a restricted controller</a></li>
+    <li><a href="@{RestrictedController.alsoRestricted}">Restrict-annotated method in a restricted controller</a></li>
+    <li><a href="@{UnrestrictedController.restrictedMethod}">A restricted method in an @Unrestricted controller.</a></li>
+</ul>
