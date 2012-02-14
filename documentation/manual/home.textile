@@ -126,15 +126,15 @@ h3. Securing views
 
 Views are secured with the deadbolt.restrictedResource tag.
 
-bc. #{deadbolt.restrictedResource resourceKey:['resourceA']}
+bc. #{deadbolt.restrictedResource resourceKeys:['resourceA']}
     this restricts access to this content to how you deal with "resourceA".  If NOT_SPECIFIED is returned, access is denied.
 #{/deadbolt.restrictedResource}
 
-bc. #{deadbolt.restrictedResource resourceKey:['resourceA', 'someMetaInfo'], allowUnspecified:false}
+bc. #{deadbolt.restrictedResource resourceKeys:['resourceA', 'someMetaInfo'], allowUnspecified:false}
     this restricts access to this content to how you deal with "resourceA", possibly informed by someMetaInfo.  If NOT_SPECIFIED is returned, access is denied.
 #{/deadbolt.restrictedResource}
 
-bc. #{deadbolt.restrictedResource resourceKey:['resourceA'], allowUnspecified:true}
+bc. #{deadbolt.restrictedResource resourceKeys:['resourceA'], allowUnspecified:true}
     this restricts access to this content to how you deal with "resourceA".  If NOT_SPECIFIED is returned, access is allowed.
 #{/deadbolt.restrictedResource}
 
@@ -197,7 +197,7 @@ bc. // This unrestricts access to the list method, even if the method is in a re
 public static void list()
 
 bc. // This unrestricts access to the Foo controller, even if the parent controller is restricted.
-@RoleHolderPresent
+@Unrestricted
 public class Foo extends Controller
 
 Note that
