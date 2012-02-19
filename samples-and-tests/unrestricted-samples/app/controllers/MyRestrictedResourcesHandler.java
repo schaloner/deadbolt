@@ -19,6 +19,7 @@ import controllers.deadbolt.RestrictedResourcesHandler;
 import models.deadbolt.AccessResult;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Steve Chaloner (steve@objectify.be)
@@ -38,7 +39,8 @@ public class MyRestrictedResourcesHandler implements RestrictedResourcesHandler
      *
      * {@inheritDoc}
      */
-    public AccessResult checkAccess(List<String> resourceNames)
+    public AccessResult checkAccess(List<String> resourceNames,
+                                    Map<String, String> resourceParameters)
     {
         // This could be hitting a database to check the resource name against that of the current user, but for pure
         // convenience it's hard-coded here.

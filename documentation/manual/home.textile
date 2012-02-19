@@ -138,6 +138,12 @@ bc. #{deadbolt.restrictedResource resourceKeys:['resourceA'], allowUnspecified:t
     this restricts access to this content to how you deal with "resourceA".  If NOT_SPECIFIED is returned, access is allowed.
 #{/deadbolt.restrictedResource}
 
+If you need to give supplementary information, you can use the resourceParameters argument to give a map that will be passed to your RestrictedResourcesHandler
+
+bc. #{deadbolt.restrictedResource resourceKeys:['resourceA'], resourceParameters:['foo':'bar']}
+    this restricts access to this content to how you deal with "resourceA".  A map containing foo -> bar will also be available in the restricted resource handler.
+#{/deadbolt.restrictedResource}
+
 
 h2. Static restrictions
 

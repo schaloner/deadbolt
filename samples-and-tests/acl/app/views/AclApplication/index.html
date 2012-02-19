@@ -1,7 +1,7 @@
 #{extends 'main.html' /}
 #{set title:targetUser.fullName /}
 
-#{deadbolt.restrictedResource resourceKeys:['friends']}
+#{deadbolt.restrictedResource resourceKeys:['friends'], resourceParameters:['foo':'bar']}
 <div style="border: 1px solid #000000; margin-bottom: 15px">
     <h3>Friends</h3>
     <ul>

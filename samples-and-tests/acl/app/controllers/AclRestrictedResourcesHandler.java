@@ -39,18 +39,21 @@ public class AclRestrictedResourcesHandler implements RestrictedResourcesHandler
         HANDLERS.put("statusUpdates",
                      new RestrictedResourcesHandler()
                      {
-                         public AccessResult checkAccess(List<String> resourceNames)
+                         public AccessResult checkAccess(List<String> resourceNames,
+                                                         Map<String, String> resourceParameters)
                          {
                              return AccessResult.ALLOWED;
                          }
                      });
     }
 
-    public AccessResult checkAccess(List<String> resourceNames)
+    public AccessResult checkAccess(List<String> resourceNames,
+                             Map<String, String> resourceParameters)
     {
         // here we assume the relevant resource name is first in the list, but you might want to check what else is in
         // there if you're defining multiple names per resource
         RestrictedResourcesHandler handler = HANDLERS.get(resourceNames.get(0));
-        return handler.checkAccess(resourceNames);
+        return handler.checkAccess(resourceNames,
+                                   resourceParameters);
     }
 }

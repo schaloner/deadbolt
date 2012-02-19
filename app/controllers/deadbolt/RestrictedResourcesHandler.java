@@ -18,6 +18,7 @@ package controllers.deadbolt;
 import models.deadbolt.AccessResult;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Steve Chaloner (steve@objectify.be)
@@ -37,8 +38,10 @@ public interface RestrictedResourcesHandler
      * </ul>
      *
      * @param resourceNames the names of the resource
+     * @param resourceParameters additional information on the resource
      * @return {@link AccessResult#ALLOWED} if access is permitted.  {@link AccessResult#DENIED} if access is denied.
      * {@link AccessResult#NOT_SPECIFIED} if access is not specified.
      */
-    AccessResult checkAccess(List<String> resourceNames);
+    AccessResult checkAccess(List<String> resourceNames,
+                             Map<String, String> resourceParameters);
 }

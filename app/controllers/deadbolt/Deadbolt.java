@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Checks authorisation based on role names.
@@ -158,7 +159,8 @@ public class Deadbolt extends Controller
                 else
                 {
                     String[] names = restrictedResource.name();
-                    AccessResult accessResult = restrictedResourcesHandler.checkAccess(names == null ? Collections.<String>emptyList() : Arrays.asList(names));
+                    AccessResult accessResult = restrictedResourcesHandler.checkAccess(names == null ? Collections.<String>emptyList() : Arrays.asList(names),
+                                                                                       Collections.<String, String>emptyMap());
                     switch (accessResult)
                     {
                         case DENIED:
@@ -396,6 +398,7 @@ public class Deadbolt extends Controller
     }
 
     public static boolean checkRestrictedResource(List<String> resourceKeys,
+                                                  Map<String, String> resourceParameters,
                                                   Boolean allowUnspecified)
     {
         DEADBOLT_HANDLER.beforeRoleCheck();
@@ -409,7 +412,8 @@ public class Deadbolt extends Controller
         }
         else
         {
-            AccessResult accessResult = restrictedResourcesHandler.checkAccess(resourceKeys);
+            AccessResult accessResult = restrictedResourcesHandler.checkAccess(resourceKeys,
+                                                                               resourceParameters);
             switch (accessResult)
             {
                 case ALLOWED:

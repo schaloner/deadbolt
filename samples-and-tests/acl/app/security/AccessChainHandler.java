@@ -9,13 +9,15 @@ import play.mvc.Http;
 
 import java.security.AccessController;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Steve Chaloner (steve@objectify.be)
  */
 public abstract class AccessChainHandler implements RestrictedResourcesHandler
 {
-    public AccessResult checkAccess(List<String> resourceNames)
+    public AccessResult checkAccess(List<String> resourceNames,
+                                    Map<String, String> resourceParameters)
     {
         String currentUserName = AclController.getCurrentUserName();
         Http.Request request = Http.Request.current();
