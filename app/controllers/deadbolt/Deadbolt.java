@@ -26,6 +26,7 @@ import play.exceptions.ConfigurationException;
 import play.mvc.Before;
 import play.mvc.Controller;
 import play.mvc.Util;
+import utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,6 +46,8 @@ public class Deadbolt extends Controller
     public static final String CACHE_USER_KEY = "deadbolt.cache-user-per-request";
 
     public static final String CACHE_PER_REQUEST = "deadbolt.cache-user";
+
+    public static final String DEFAULT_RESPONSE_FORMAT = "deadbolt.default-response-format";
 
     private static DeadboltHandler DEADBOLT_HANDLER;
 
@@ -321,6 +324,37 @@ public class Deadbolt extends Controller
         Logger.debug("Deadbolt: Access failure on [%s]",
                      controllerClassName);
 
+        String responseFormat = null;
+        if (getActionAnnotation(JSON.class) != null)
+        {
+            responseFormat = "json";
+        }
+        else if (getActionAnnotation(XML.class) != null)
+        {
+            responseFormat = "xml";
+        }
+        else if (getControllerAnnotation(JSON.class) != null)
+        {
+            responseFormat = "json";
+        }
+        else if (getControllerAnnotation(XML.class) != null)
+        {
+            responseFormat = "xml";
+        }
+        else
+        {
+            String defaultResponseFormat = Play.configuration.getProperty(DEFAULT_RESPONSE_FORMAT);
+            if (!StringUtils.isEmpty(defaultResponseFormat))
+            {
+                responseFormat = defaultResponseFormat;
+            }
+        }
+
+        if (!StringUtils.isEmpty(responseFormat))
+        {
+            request.format = responseFormat;
+        }
+
         DEADBOLT_HANDLER.onAccessFailure(controllerClassName);
 
     }
@@ -438,6 +472,7 @@ public class Deadbolt extends Controller
         return accessedAllowed;
     }
 
+    @Util
     public static void forbidden()
     {
         Controller.forbidden();

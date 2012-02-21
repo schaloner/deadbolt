@@ -1,0 +1,13 @@
+#{extends 'main.html' /}
+#{set title:'Home' /}
+
+<p>All these methods will result in access failures</p>
+
+<ul>
+    <li><a href="@{ContentTypeApplication.xmlContent()}">XML content with method annotation</a></li>
+    <li><a href="@{ContentTypeApplication.jsonContent()}">JSON content with method annotation</a></li>
+    <li><a href="@{XMLController.xmlControllerResponse()}">XML content with controller annotation</a></li>
+    <li><a href="@{XMLController.jsonResponseFromXMLControllerResponse()}">JSON content with from XML-annotated controller</a></li>
+    <li><a href="@{JSONController.jsonControllerResponse()}">JSON content with controller annotation</a></li>
+    <li><a href="@{JSONController.xmlResponseFromJSONControllerResponse()}">XML content with from JSON-annotated controller</a></li>
+</ul>

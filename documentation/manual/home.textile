@@ -334,3 +334,31 @@ To enable this, add the following to your application.conf file:
 bc. deadbolt.cache-user-per-request=true
 
 If the property is not present or set to something other than true, the per-request caching will be disabled.  This is the default behaviour.
+
+h3. Content return types
+
+Play takes HTML as the default response format when you invoke the Controller#render method.  If your application typically, or even occasionally, returns another
+format then you have a problem.  Unless you configure your routes file to specify the response format, or do some content negotiation from the client, you're pretty
+much stuck with HTML.  The impact for Deadbolt is that while your DeadboltHandler implementation has an onAccessFailure method, there's no easy way to check what
+format you're working with.
+
+If you want to specify a default response format for when DeadboltHandler#onAccessFailure is invoked, you can add an entry to the application.conf file to do this:
+
+bc. deadbolt.default-response-format=json
+
+This will set the request.format field to whatever response type you have set, which will in turn determine which template is called when you invoke render()...html
+will result in .html templates being rendered, json will result in .json templates being rendered, foo will result in .foo templates, and so on.
+
+If you have an application that returns a mix of response types, then setting a default format may not be of much use to you.  In these cases, you may want to use annotations
+to give you some hints.  There are two built-in annotations with Deadbolt, @JSON and @XML.  You can apply these to a controller or to an individual method.  When present,
+the request format will be set to json or xml respectively before your DeadboltHandler's onAccessFailure method is invoked.
+
+Note that you can annotate a controller with @JSON but have an @XML method in there, and vice-versa.
+
+What about when the next great format is invented?  That's where you have to do your own work.  You can add your own annotations to controllers or methods and check for them
+in your onAccessFailure implementation before you call render.
+
+One important note - whichever forbidden method you invoke from onAccessFailure cannot be a redirect. The easiest way to do this is to create a 403 file in the views/errors
+directory of your application for each format type, and invoke Deadbolt.forbidden() from your onAccessFailure implementation.  See samples-and-tests/content-types for an example.
+
+Ideally, the content types would be specified in the routes file but since route wildcards are both possible and extremely useful, you sometimes need to get implementation-specific.
