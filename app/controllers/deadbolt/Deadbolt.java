@@ -26,7 +26,6 @@ import play.exceptions.ConfigurationException;
 import play.mvc.Before;
 import play.mvc.Controller;
 import play.mvc.Util;
-import utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -344,13 +343,13 @@ public class Deadbolt extends Controller
         else
         {
             String defaultResponseFormat = Play.configuration.getProperty(DEFAULT_RESPONSE_FORMAT);
-            if (!StringUtils.isEmpty(defaultResponseFormat))
+            if (!isEmpty(defaultResponseFormat))
             {
                 responseFormat = defaultResponseFormat;
             }
         }
 
-        if (!StringUtils.isEmpty(responseFormat))
+        if (!isEmpty(responseFormat))
         {
             request.format = responseFormat;
         }
@@ -477,4 +476,8 @@ public class Deadbolt extends Controller
     {
         Controller.forbidden();
     }
-}
+
+    private static boolean isEmpty(String s)
+    {
+        return s == null || s.trim().length() == 0;
+    }}
