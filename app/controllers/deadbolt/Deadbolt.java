@@ -471,6 +471,43 @@ public class Deadbolt extends Controller
         return accessedAllowed;
     }
 
+    public static boolean checkExternalizedRestriction(List<String> externalRestrictions)
+    {
+        DEADBOLT_HANDLER.beforeRoleCheck();
+
+        boolean roleOk = false;
+        if (externalRestrictions != null)
+        {
+            ExternalizedRestrictionsAccessor externalisedRestrictionsAccessor =
+                    DEADBOLT_HANDLER.getExternalizedRestrictionsAccessor();
+            RoleHolder roleHolder = getRoleHolder();
+
+            if (externalisedRestrictionsAccessor == null)
+            {
+                Logger.fatal("@ExternalRestrictions are specified but no ExternalizedRestrictionsAccessor is available.  Denying access to resource.");
+            }
+            else
+            {
+                for (String externalRestrictionTreeName : externalRestrictions)
+                {
+                    ExternalizedRestrictions externalizedRestrictions =
+                            externalisedRestrictionsAccessor.getExternalizedRestrictions(externalRestrictionTreeName);
+                    if (externalizedRestrictions != null)
+                    {
+                        List<ExternalizedRestriction> restrictions = externalizedRestrictions.getExternalisedRestrictions();
+                        for (ExternalizedRestriction restriction : restrictions)
+                        {
+                            List<String> roleNames = restriction.getRoleNames();
+                            roleOk |= checkRole(roleHolder,
+                                                roleNames.toArray(new String[roleNames.size()]));
+                        }
+                    }
+                }
+            }
+        }
+        return roleOk;
+    }
+
     @Util
     public static void forbidden()
     {
