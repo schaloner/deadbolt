@@ -172,7 +172,7 @@ public class Deadbolt extends Controller
                             if (restrictedResource.staticFallback())
                             {
                                 Logger.info("Access for [%s] not defined for current user - processing further with other Deadbolt annotations",
-                                            names);
+                                            (Object[])names);
                                 handleStaticChecks(roleHolder);
                             }
                             else
@@ -182,7 +182,7 @@ public class Deadbolt extends Controller
                             break;
                         default:
                             Logger.debug("RestrictedResource - access allowed for [%s]",
-                                         names);
+                                         (Object[])names);
                     }
                 }
             }
