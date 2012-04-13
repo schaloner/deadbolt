@@ -1,0 +1,32 @@
+<p>The following box should contain text</p>
+<div style="border: 1px solid #000000">
+    #{deadbolt.externalizedRestriction externalRestrictions:['standard']}
+    blah blah blah
+    #{/deadbolt.externalizedRestriction}
+</div>
+<br/>
+<br/>
+<p>The following box should contain text</p>
+<div style="border: 1px solid #000000">
+    #{deadbolt.externalizedRestriction externalRestrictions:['standard', 'one-role-missing']}
+    blah blah blah
+    #{/deadbolt.externalizedRestriction}
+</div>
+<br/>
+<br/>
+<p>The following box should not contain text</p>
+<div style="border: 1px solid #000000">
+    #{deadbolt.externalizedRestriction externalRestrictions:['exclude-restricted']}
+    blah blah blah
+    #{/deadbolt.externalizedRestriction}
+</div>
+<br/>
+<br/>
+<p>The following box should contain text</p>
+<div style="border: 1px solid #000000">
+    #{deadbolt.externalizedRestriction externalRestrictions:['standard', 'exclude-restricted']}
+    blah blah blah
+    #{/deadbolt.externalizedRestriction}
+</div>
+<br/>
+<br/>

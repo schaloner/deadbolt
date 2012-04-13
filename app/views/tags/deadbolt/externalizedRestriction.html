@@ -1,0 +1,6 @@
+%{
+    boolean allowAccess = controllers.deadbolt.Deadbolt.checkExternalizedRestriction(_externalRestrictions)
+}%
+#{if allowAccess}
+    #{doBody /}
+#{/if}

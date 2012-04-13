@@ -309,6 +309,17 @@ public class MyExternalizedRestrictionsAccessor implements ExternalizedRestricti
     }
 }
 
+h3. Securing views
+
+Views are secured with the deadbolt.externalizedRestriction tag.
+
+bc. #{deadbolt.externalizedRestriction externalRestrictions:['admin']}
+    this restricts access to this content to how you deal with "admin" in your ExternalizedRestrictionsAccessor.
+#{/deadbolt.externalizedRestriction}
+
+bc. #{deadbolt.externalizedRestriction externalRestrictions:['admin', 'super-mega-admin']}
+    this restricts access to this content to how you deal with "admin" OR "super-mega-admin" in your ExternalizedRestrictionsAccessor.
+#{/deadbolt.externalizedRestriction}
 
 h3. Mixing annotations
 

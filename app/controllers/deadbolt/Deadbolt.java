@@ -172,7 +172,7 @@ public class Deadbolt extends Controller
                             if (restrictedResource.staticFallback())
                             {
                                 Logger.info("Access for [%s] not defined for current user - processing further with other Deadbolt annotations",
-                                            names);
+                                            (Object[])names);
                                 handleStaticChecks(roleHolder);
                             }
                             else
@@ -182,7 +182,7 @@ public class Deadbolt extends Controller
                             break;
                         default:
                             Logger.debug("RestrictedResource - access allowed for [%s]",
-                                         names);
+                                         (Object[])names);
                     }
                 }
             }
@@ -469,6 +469,43 @@ public class Deadbolt extends Controller
         }
 
         return accessedAllowed;
+    }
+
+    public static boolean checkExternalizedRestriction(List<String> externalRestrictions)
+    {
+        DEADBOLT_HANDLER.beforeRoleCheck();
+
+        boolean roleOk = false;
+        if (externalRestrictions != null)
+        {
+            ExternalizedRestrictionsAccessor externalisedRestrictionsAccessor =
+                    DEADBOLT_HANDLER.getExternalizedRestrictionsAccessor();
+            RoleHolder roleHolder = getRoleHolder();
+
+            if (externalisedRestrictionsAccessor == null)
+            {
+                Logger.fatal("@ExternalRestrictions are specified but no ExternalizedRestrictionsAccessor is available.  Denying access to resource.");
+            }
+            else
+            {
+                for (String externalRestrictionTreeName : externalRestrictions)
+                {
+                    ExternalizedRestrictions externalizedRestrictions =
+                            externalisedRestrictionsAccessor.getExternalizedRestrictions(externalRestrictionTreeName);
+                    if (externalizedRestrictions != null)
+                    {
+                        List<ExternalizedRestriction> restrictions = externalizedRestrictions.getExternalisedRestrictions();
+                        for (ExternalizedRestriction restriction : restrictions)
+                        {
+                            List<String> roleNames = restriction.getRoleNames();
+                            roleOk |= checkRole(roleHolder,
+                                                roleNames.toArray(new String[roleNames.size()]));
+                        }
+                    }
+                }
+            }
+        }
+        return roleOk;
     }
 
     @Util
