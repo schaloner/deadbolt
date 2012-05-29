@@ -40,6 +40,8 @@ import java.util.Map;
  */
 public class Deadbolt extends Controller
 {
+    private enum RestrictionType { NONE, DYNAMIC, STATIC, BASIC }
+
     public static final String DEADBOLT_HANDLER_KEY = "deadbolt.handler";
 
     public static final String CACHE_USER_KEY = "deadbolt.cache-user-per-request";
@@ -96,10 +98,19 @@ public class Deadbolt extends Controller
         DEADBOLT_HANDLER.beforeRoleCheck();
 
         RoleHolder roleHolder = getRoleHolder();
-
-        handleDynamicChecks(roleHolder);
-        handleStaticChecks(roleHolder);
-        handleRoleHolderPresent(roleHolder);
+        RestrictionType restrictionType = getRestrictionType();
+        if (restrictionType == RestrictionType.DYNAMIC)
+        {
+            handleDynamicChecks(roleHolder);
+        }
+        else if (restrictionType == RestrictionType.STATIC)
+        {
+            handleStaticChecks(roleHolder);
+        }
+        else if (restrictionType == RestrictionType.BASIC)
+        {
+            handleRoleHolderPresent(roleHolder);
+        }
     }
 
     @Util
@@ -410,6 +421,47 @@ public class Deadbolt extends Controller
     public static boolean isRoleHolderPresent()
     {
         return getRoleHolder() != null;
+    }
+
+    private static RestrictionType getRestrictionType()
+    {
+        RestrictionType restrictionType = RestrictionType.NONE;
+
+        if (getActionAnnotation(Restrict.class) != null
+            || getActionAnnotation(Restrictions.class) != null
+            || getActionAnnotation(ExternalRestrictions.class) != null)
+        {
+            restrictionType = RestrictionType.STATIC;
+        }
+        else if (getActionAnnotation(RestrictedResource.class) != null)
+        {
+            restrictionType = RestrictionType.DYNAMIC;
+        }
+        else if (getActionAnnotation(RoleHolderPresent.class) != null)
+        {
+            restrictionType = RestrictionType.BASIC;
+        }
+
+        if (restrictionType == RestrictionType.NONE
+                && getControllerAnnotation(Unrestricted.class) == null)
+        {
+            if (getControllerInheritedAnnotation(Restrict.class) != null
+                || getControllerInheritedAnnotation(Restrictions.class) != null
+                || getControllerInheritedAnnotation(ExternalRestrictions.class) != null)
+            {
+                restrictionType = RestrictionType.STATIC;
+            }
+            else if (getControllerInheritedAnnotation(RestrictedResource.class) != null)
+            {
+                restrictionType = RestrictionType.DYNAMIC;
+            }
+            else if (getControllerInheritedAnnotation(RoleHolderPresent.class) != null)
+            {
+                restrictionType = RestrictionType.BASIC;
+            }
+        }
+
+        return restrictionType;
     }
 
     /**

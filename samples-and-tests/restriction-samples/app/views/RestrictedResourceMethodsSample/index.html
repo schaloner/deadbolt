@@ -4,6 +4,8 @@
     <li><a href="@{RestrictedResourceMethodsSample.allowed}">Allowed</a></li>
     <li><a href="@{RestrictedResourceMethodsSample.notSpecifiedWithStaticFallbackAndNoStaticRestrictions}">Not specified, with static restriction checking enabled and no static restrictions present</a></li>
     <li><a href="@{RestrictedResourceMethodsSample.notSpecifiedWithStaticFallbackAndOkStaticRestriction}">Not specified, with static restriction checking enabled and a static restriction that permits access</a></li>
+    <li><a href="@{RestrictedResourceMethodsInRestrictedClassSample.allowed()}">Method-level dynamic restriction overriding a class-level static restriction</a></li>
+    <li><a href="@{RestrictedMethodsInRestrictedResourceClassSample.allowed()}">Method-level static restriction overriding a class-level dynamic restriction</a></li>
 </ul>
 
 <br/>
@@ -15,4 +17,6 @@
     <li><a href="@{RestrictedResourceMethodsSample.notSpecified}">Not specified</a></li>
     <li><a href="@{RestrictedResourceMethodsSample.notSpecifiedWithStaticFallbackAndBlockingStaticRestriction}">Not specified, with static restriction checking enabled and a static restriction that blocks</a></li>
     <li><a href="@{RestrictedResourceMethodsSample.denied}">Denied</a></li>
+    <li><a href="@{RestrictedResourceMethodsInRestrictedClassSample.notAllowed()}">Class-level static restriction not overridden by a dynamic restriction</a></li>
+    <li><a href="@{RestrictedMethodsInRestrictedResourceClassSample.notAllowed()}">Method-level static restriction overriding a class-level dynamic restriction</a></li>
 </ul>
