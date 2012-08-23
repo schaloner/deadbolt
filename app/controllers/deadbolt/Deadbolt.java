@@ -515,7 +515,7 @@ public class Deadbolt extends Controller
                     }
                     break;
                 default:
-                    Logger.debug("RestrictedResource - access allowed for [%s]",
+                    Logger.debug("RestrictedResource - access denied for [%s]",
                                  resourceKeys);
             }
         }
