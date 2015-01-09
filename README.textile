@@ -1,6 +1,6 @@
 h1. Deadbolt
 
-Deadbolt is an authorisation mechanism for defining access rights to certain controller methods or parts of a view using a simple AND/OR/NOT syntax.  It is based on the original Secure module that comes with the Play! framework.
+Deadbolt is an authorisation mechanism for the Play 1 framework for defining access rights to certain controller methods or parts of a view using a simple AND/OR/NOT syntax.  It is based on the original Secure module that comes with the Play! framework.
 
 Note that Deadbolt doesn't provide authentication!  You can still use the existing Secure module alongside Deadbolt to provide authentication, and in cases where authentication is handled outside your app you can just hook up the authorisation mechanism to whatever auth system is used.
 
